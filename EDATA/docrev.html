@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NVSSoft - Document History</title>
+    <style>
+        /* ─── RESET & BASE ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #F1F5F9;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* ─── HEADER ─── */
+        .header {
+            background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%);
+            padding: 20px 32px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-left .logo img {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+
+        .header-left .title h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .header-left .title .sub {
+            font-size: 14px;
+            color: #94A3B8;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .record-count {
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.10);
+            padding: 8px 20px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-upload {
+            background: #3B82F6;
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-upload:hover {
+            background: #2563EB;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.30);
+        }
+
+        /* ─── MAIN LAYOUT ─── */
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        /* ─── LEFT SIDEBAR ─── */
+        .sidebar {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-title .badge {
+            background: #3B82F6;
+            color: white;
+            font-size: 11px;
+            padding: 1px 10px;
+            border-radius: 100px;
+        }
+
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .doc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1.5px solid transparent;
+        }
+
+        .doc-item:hover {
+            background: #F1F5F9;
+        }
+
+        .doc-item.active {
+            background: #E8F0FE;
+            border-color: #3B82F6;
+        }
+
+        .doc-item .doc-icon {
+            font-size: 20px;
+        }
+
+        .doc-item .doc-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #0F172A;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-item .doc-status {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 10px;
+            border-radius: 100px;
+        }
+
+        .doc-item .doc-status.success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .doc-item .doc-status.processing {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .doc-item .doc-status.error {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* ─── RIGHT PANEL ─── */
+        .panel {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .panel-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0F172A;
+        }
+
+        .panel-header .actions input {
+            padding: 8px 16px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 13px;
+            font-family: inherit;
+            min-width: 200px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .panel-header .actions input:focus {
+            border-color: #3B82F6;
+        }
+
+        /* ─── TABLE ─── */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead th {
+            background: #F8FAFC;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid #E2E8F0;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #F1F4F9;
+            color: #1E293B;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #F8FAFC;
+        }
+
+        /* ─── STATUS BADGE ─── */
+        .status-badge-table {
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .status-badge-table.success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-badge-table.processing {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-badge-table.error {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* ─── ACTION BUTTONS ─── */
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-action {
+            padding: 5px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .btn-action.edit {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .btn-action.edit:hover {
+            background: #D97706;
+        }
+
+        .btn-action.delete {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-action.delete:hover {
+            background: #DC2626;
+        }
+
+        .btn-action.view {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .btn-action.view:hover {
+            background: #2563EB;
+        }
+
+        /* ─── EMPTY STATE ─── */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94A3B8;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .empty-state.hidden {
+            display: none;
+        }
+
+        /* ─── TOAST ─── */
+        .toast-container {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .toast {
+            padding: 14px 22px;
+            border-radius: 14px;
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast.success { background: rgba(16, 185, 129, 0.95); }
+        .toast.error { background: rgba(239, 68, 68, 0.95); }
+        .toast.info { background: rgba(59, 130, 246, 0.95); }
+
+        @keyframes toastIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                max-height: 200px;
+            }
+            .doc-list {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .doc-item {
+                flex: 1 0 auto;
+                min-width: 150px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 16px; }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 16px 20px;
+            }
+            .header-left {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .header-left .logo img { height: 44px; }
+            .header-left .title h1 { font-size: 20px; }
+            .header-right {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+            .panel-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .panel-header .actions input {
+                min-width: auto;
+                width: 100%;
+            }
+            .toast-container { right: 16px; left: 16px; max-width: none; }
+            table { font-size: 12px; }
+            thead th, tbody td { padding: 8px 10px; }
+            .btn-action { padding: 4px 10px; font-size: 10px; min-width: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ─── HEADER ─── -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="c:\Users\Bader\OneDrive\Desktop\FINAL.LOGO.avif" alt="NVSSoft" />
+                </div>
+                <div class="title">
+                    <h1>📁 Documents Used</h1>
+                    <span class="sub">All The Data Extracted</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="record-count" id="recordCount">0 Records</span>
+                <a href="upload.html" class="btn-upload">📤 Upload New</a>
+            </div>
+        </header>
+
+        <!-- ─── MAIN CONTENT ─── -->
+        <div class="main-content">
+
+            <!-- ─── LEFT SIDEBAR ─── -->
+            <aside class="sidebar">
+                <div class="sidebar-title">
+                    📄 Documents
+                    <span class="badge" id="docBadge">0</span>
+                </div>
+                <div class="doc-list" id="docList">
+                    <div class="empty-state" id="emptyDocs">
+                        <span class="icon">📭</span>
+                        <p>No documents uploaded yet.</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ─── RIGHT PANEL ─── -->
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>📊 Extracted Data</h2>
+                    <div class="actions">
+                        <input type="text" id="searchInput" placeholder="🔍 Search documents..." />
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead id="tableHead">
+                            <tr>
+                                <th>Document</th>
+                                <th>Type</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="empty-state" id="emptyTable">
+                    <span class="icon">📭</span>
+                    <p>No extracted data available.</p>
+                    <p style="font-size:13px; margin-top:4px;">Upload a document to get started.</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- ─── TOAST ─── -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ─── JAVASCRIPT ─── -->
+    <script>
+        (() => {
+            'use strict';
+
+            const API_BASE = 'http://localhost:5018';
+            let allRecords = [];
+
+            const docList = document.getElementById('docList');
+            const docBadge = document.getElementById('docBadge');
+            const recordCount = document.getElementById('recordCount');
+            const tableBody = document.getElementById('tableBody');
+            const tableHead = document.getElementById('tableHead');
+            const emptyTable = document.getElementById('emptyTable');
+            const emptyDocs = document.getElementById('emptyDocs');
+            const searchInput = document.getElementById('searchInput');
+
+            // ── Document Type Display Names ──
+            const DOC_TYPE_NAMES = {
+                'Invoice': '📄 Invoice',
+                'NationalID': '🪪 National ID',
+                'Passport': '🛂 Passport',
+                'EmployeeRecord': '👤 Employee Record',
+                'Receipt': '🧾 Receipt'
+            };
+
+            // ── Helper to get display fields from data ──
+            function getDisplayFields(rec) {
+                if (!rec.data) return [];
+
+                try {
+                    const data = typeof rec.data === 'string' ? JSON.parse(rec.data) : rec.data;
+                    const fields = [];
+                    const exclude = ['docId', 'docType', 'fileName'];
+
+                    for (const [key, value] of Object.entries(data)) {
+                        if (!exclude.includes(key) && value) {
+                            const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                            fields.push({ label, value });
+                        }
+                    }
+                    return fields.slice(0, 3); // Show first 3 fields
+                } catch {
+                    return [];
+                }
+            }
+
+            // ── Render Table with Dynamic Columns ──
+            function renderTable(records) {
+                const tbody = tableBody;
+                const empty = emptyTable;
+
+                tbody.innerHTML = '';
+
+                if (!records || records.length === 0) {
+                    empty.classList.remove('hidden');
+                    tbody.style.display = 'none';
+                    recordCount.textContent = '0 Records';
+                    return;
+                }
+
+                empty.classList.add('hidden');
+                tbody.style.display = 'table-row-group';
+                recordCount.textContent = records.length + ' Records';
+
+                records.forEach((rec) => {
+                    const displayFields = getDisplayFields(rec);
+                    const docTypeName = DOC_TYPE_NAMES[rec.docType] || rec.docType || 'Document';
+
+                    // Build data column content
+                    let dataHtml = '';
+                    if (displayFields.length > 0) {
+                        dataHtml = displayFields.map(f =>
+                            `<div style="font-size:12px; padding:2px 0; border-bottom:1px solid #F1F4F9; display:flex; justify-content:space-between;">
+                                <span style="color:#64748B; font-weight:500;">${f.label}:</span>
+                                <span style="color:#0F172A; font-weight:600;">${f.value}</span>
+                            </div>`
+                        ).join('');
+                    } else {
+                        dataHtml = '<span style="color:#94A3B8; font-size:12px;">No data</span>';
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${rec.fileName || rec.document || 'N/A'}</strong></td>
+                        <td><span style="font-size:12px;">${docTypeName}</span></td>
+                        <td style="min-width:180px;">${dataHtml}</td>
+                        <td>${getStatusBadge(rec.status || 'Extracted Successfully')}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="btn-action edit" onclick="handleEdit(${rec.id || 0})">✏️ Edit</button>
+                                <button class="btn-action delete" onclick="handleDelete(${rec.id || 0})">🗑️ Delete</button>
+                                <button class="btn-action view" onclick="handleView(${rec.id || 0})">👁️ View</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            function getStatusBadge(status) {
+                const map = {
+                    'Extracted Successfully': 'success',
+                    'Extracted': 'success',
+                    'Processing': 'processing',
+                    'Error': 'error',
+                };
+                const cls = map[status] || 'processing';
+                return `<span class="status-badge-table ${cls}">${status || 'Processing'}</span>`;
+            }
+
+            function renderSidebar(records) {
+                const list = docList;
+                const empty = emptyDocs;
+
+                const emptyEl = list.querySelector('.empty-state');
+                if (emptyEl) emptyEl.remove();
+
+                list.querySelectorAll('.doc-item').forEach(el => el.remove());
+
+                if (!records || records.length === 0) {
+                    list.appendChild(emptyDocs);
+                    docBadge.textContent = '0';
+                    return;
+                }
+
+                docBadge.textContent = records.length;
+
+                records.forEach((rec, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'doc-item' + (index === 0 ? ' active' : '');
+                    const icon = rec.fileName ? getFileIcon(rec.fileName) : '📄';
+                    div.innerHTML = `
+                        <span class="doc-icon">${icon}</span>
+                        <span class="doc-name">${rec.fileName || rec.document || 'Unknown'}</span>
+                        <span class="doc-status success">✅ Done</span>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+
+            function getFileIcon(name) {
+                if (!name) return '📄';
+                const ext = name.split('.').pop().toLowerCase();
+                const icons = { pdf: '📄', docx: '📃', doc: '📃', png: '🖼️', jpg: '🖼️', jpeg: '🖼️' };
+                return icons[ext] || '📎';
+            }
+
+            function searchRecords(query) {
+                if (!query.trim()) {
+                    renderTable(allRecords);
+                    renderSidebar(allRecords);
+                    return;
+                }
+                const q = query.toLowerCase();
+                const filtered = allRecords.filter(r => {
+                    const docTypeName = DOC_TYPE_NAMES[r.docType] || r.docType || '';
+                    return (r.fileName || '').toLowerCase().includes(q) ||
+                           (r.docType || '').toLowerCase().includes(q) ||
+                           docTypeName.toLowerCase().includes(q);
+                });
+                renderTable(filtered);
+                renderSidebar(filtered);
+            }
+
+            // ── Mock Data with Document Types ──
+            function getMockData() {
+                return [
+                    {
+                        id: 1,
+                        fileName: 'invoice_4323.pdf',
+                        docType: 'Invoice',
+                        data: {
+                            invoiceNumber: 'INV-2026-0418',
+                            date: '2026-06-12',
+                            dueDate: '2026-07-12',
+                            vendorName: 'Acme Industrial Supply Co.',
+                            email: 'invoices@acmesupply.com',
+                            amount: 7632.00
+                        },
+                        status: 'Extracted Successfully'
+                    },
+                    {
+                        id: 2,
+                        fileName: 'id_card_john.pdf',
+                        docType: 'NationalID',
+                        data: {
+                            idNumber: 'ID-2026-001',
+                            fullName: 'John Doe',
+                            dateOfBirth: '1990-01-01',
+                            nationality: 'American',
+                            expiryDate: '2030-12-31'
+                        },
+                        status: 'Extracted Successfully'
+                    },
+                    {
+                        id: 3,
+                        fileName: 'passport_jane.pdf',
+                        docType: 'Passport',
+                        data: {
+                            passportNumber: 'P12345678',
+                            fullName: 'Jane Smith',
+                            dateOfBirth: '1985-05-15',
+                            nationality: 'British',
+                            expiryDate: '2032-08-20'
+                        },
+                        status: 'Processing'
+                    },
+                    {
+                        id: 4,
+                        fileName: 'employee_robert.docx',
+                        docType: 'EmployeeRecord',
+                        data: {
+                            employeeId: 'EMP-2026-001',
+                            fullName: 'Robert Johnson',
+                            department: 'Engineering',
+                            position: 'Senior Developer',
+                            email: 'robert.j@company.com',
+                            phone: '+1-555-123-4567'
+                        },
+                        status: 'Extracted Successfully'
+                    },
+                    {
+                        id: 5,
+                        fileName: 'receipt_store.pdf',
+                        docType: 'Receipt',
+                        data: {
+                            receiptNumber: 'RCP-2026-001',
+                            date: '2026-06-12',
+                            vendorName: 'Local Store',
+                            amount: 125.50,
+                            paymentMethod: 'Credit Card'
+                        },
+                        status: 'Extracted Successfully'
+                    }
+                ];
+            }
+
+            // ── Global Actions ──
+            window.handleEdit = function(id) {
+                const rec = allRecords.find(r => r.id === id);
+                if (rec) {
+                    showToast(`✏️ Editing: ${rec.fileName || rec.document}`, 'info');
+                    // Store data in sessionStorage and redirect to index.html
+                    sessionStorage.setItem('editData', JSON.stringify(rec));
+                    window.location.href = `index.html?edit=${id}`;
+                }
+            };
+
+            window.handleDelete = function(id) {
+                if (!confirm('Are you sure you want to delete this record?')) return;
+                allRecords = allRecords.filter(r => r.id !== id);
+                renderSidebar(allRecords);
+                renderTable(allRecords);
+                showToast('🗑️ Record deleted successfully.', 'success');
+            };
+
+            window.handleView = function(id) {
+                const rec = allRecords.find(r => r.id === id);
+                if (rec) {
+                    const displayFields = getDisplayFields(rec);
+                    let msg = `📄 ${rec.fileName}\n📋 Type: ${DOC_TYPE_NAMES[rec.docType] || rec.docType}\n`;
+                    displayFields.forEach(f => {
+                        msg += `\n${f.label}: ${f.value}`;
+                    });
+                    alert(msg);
+                }
+            };
+
+            // ── Toast ──
+            function showToast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => toast.remove(), 500);
+                }, 3500);
+            }
+
+            // ── Search ──
+            searchInput.addEventListener('input', function() {
+                searchRecords(this.value);
+            });
+
+            // ── Load Data ──
+            allRecords = getMockData();
+            renderSidebar(allRecords);
+            renderTable(allRecords);
+
+        })();
+    </script>
+
+</body>
+</html>

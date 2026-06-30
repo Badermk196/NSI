@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NVSSoft - Admin Dashboard</title>
+    <style>
+        /* ─── RESET & BASE ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy-950: #0B1220;
+            --navy-900: #111A2E;
+            --navy-800: #182338;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748B;
+            --slate-400: #94A3B8;
+            --slate-300: #CBD5E1;
+            --slate-200: #E2E8F0;
+            --slate-100: #EEF2F7;
+            --slate-50: #F6F8FB;
+            --blue-600: #2563EB;
+            --blue-500: #3B82F6;
+            --blue-100: #DBEAFE;
+            --emerald-600: #059669;
+            --emerald-500: #10B981;
+            --emerald-100: #D1FAE5;
+            --amber-500: #F59E0B;
+            --amber-100: #FEF3C7;
+            --red-500: #EF4444;
+            --red-100: #FEE2E2;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 32px rgba(15, 23, 42, 0.06);
+        }
+
+        html {
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--slate-50);
+            min-height: 100vh;
+            padding: 28px;
+            color: var(--navy-900);
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* ─── HEADER ─── */
+        .header {
+            background: linear-gradient(135deg, var(--navy-950) 0%, var(--navy-900) 55%, var(--navy-800) 100%);
+            border-radius: var(--radius-lg);
+            padding: 20px 32px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 48px rgba(11, 18, 32, 0.28);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(59, 130, 246, 0.14), transparent 50%);
+            pointer-events: none;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-left .logo img {
+            height: 56px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+        }
+
+        .header-left .title h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .header-left .title .sub {
+            font-size: 13px;
+            color: rgba(226, 232, 240, 0.7);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-right .admin-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            padding: 6px 18px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .header-right .admin-badge .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #34D399;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* ─── GRID ─── */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .grid-full {
+            grid-column: 1 / -1;
+        }
+
+        /* ─── CARDS ─── */
+        .card {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(15, 23, 42, 0.045);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy-900);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header h2 .icon {
+            font-size: 20px;
+        }
+
+        .card-header .badge {
+            background: var(--blue-100);
+            color: var(--blue-600);
+            padding: 4px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .card-sub {
+            font-size: 13px;
+            color: var(--slate-500);
+            margin-bottom: 20px;
+        }
+
+        /* ─── SEARCH BAR ─── */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 200px;
+            background: var(--slate-50);
+        }
+
+        .search-bar input:focus {
+            border-color: var(--blue-500);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
+        }
+
+        /* ─── DOCUMENT TYPE LIST ─── */
+        .doc-type-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .doc-type-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--slate-50);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1.5px solid transparent;
+        }
+
+        .doc-type-item:hover {
+            background: var(--blue-100);
+            border-color: var(--blue-500);
+        }
+
+        .doc-type-item.active {
+            background: var(--blue-100);
+            border-color: var(--blue-500);
+        }
+
+        .doc-type-item .name {
+            font-weight: 600;
+            color: var(--navy-900);
+            font-size: 14px;
+        }
+
+        .doc-type-item .count {
+            background: var(--slate-200);
+            padding: 2px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--slate-600);
+        }
+
+        .btn-add {
+            background: var(--blue-500);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-add:hover {
+            background: var(--blue-600);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+        }
+
+        /* ─── FIELD MAPPING TABLE ─── */
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead th {
+            background: var(--slate-50);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--slate-600);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 2px solid var(--slate-200);
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--slate-100);
+            color: var(--navy-900);
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: var(--slate-50);
+        }
+
+        .field-input {
+            padding: 6px 10px;
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            background: #FFFFFF;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 100px;
+        }
+
+        .field-input:focus {
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+        }
+
+        .field-input:disabled {
+            background: var(--slate-50);
+            color: var(--slate-500);
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--blue-500);
+            cursor: pointer;
+        }
+
+        .btn-sm {
+            padding: 5px 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-sm.primary {
+            background: var(--blue-500);
+            color: white;
+        }
+
+        .btn-sm.primary:hover {
+            background: var(--blue-600);
+        }
+
+        .btn-sm.danger {
+            background: var(--red-100);
+            color: var(--red-500);
+        }
+
+        .btn-sm.danger:hover {
+            background: var(--red-500);
+            color: white;
+        }
+
+        .btn-sm.success {
+            background: var(--emerald-100);
+            color: var(--emerald-600);
+        }
+
+        .btn-sm.success:hover {
+            background: var(--emerald-500);
+            color: white;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            padding-top: 16px;
+            border-top: 1px solid var(--slate-100);
+        }
+
+        .btn-save {
+            background: var(--emerald-500);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            background: var(--emerald-600);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-secondary {
+            background: var(--slate-100);
+            color: var(--slate-700);
+            border: none;
+            padding: 12px 32px;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--slate-200);
+        }
+
+        /* ─── CONFIG FORM ─── */
+        .config-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 28px;
+        }
+
+        .config-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .config-field label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--slate-500);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .config-field input {
+            padding: 10px 14px;
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--slate-50);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .config-field input:focus {
+            border-color: var(--blue-500);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
+        }
+
+        .config-field input:disabled {
+            background: var(--slate-100);
+            color: var(--slate-500);
+        }
+
+        .config-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-test {
+            background: var(--amber-500);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+
+        .btn-test:hover {
+            background: #D97706;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.25);
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .config-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 16px; }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 20px;
+            }
+            .header-left .logo img { height: 40px; }
+            .header-left .title h1 { font-size: 18px; }
+            .card { padding: 20px; }
+            .card-header { flex-direction: column; align-items: flex-start; }
+            .search-bar { flex-direction: column; }
+            .doc-type-item { flex-wrap: wrap; gap: 6px; }
+            .config-actions { flex-direction: column; }
+            .action-row { flex-direction: column; }
+            .btn-save, .btn-secondary { width: 100%; justify-content: center; }
+            thead th, tbody td { padding: 8px 10px; font-size: 12px; }
+            .field-input { font-size: 12px; padding: 4px 8px; min-width: 70px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ─── HEADER ─── -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="c:\Users\Bader\OneDrive\Desktop\FINAL.LOGO.avif" alt="NVSSoft" />
+                </div>
+                <div class="title">
+                    <h1>⚙️ Admin Dashboard</h1>
+                    <span class="sub">Manage database, document templates, and AI extraction</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="admin-badge">
+                    <span class="dot"></span> Admin
+                </span>
+            </div>
+        </header>
+
+        <!-- ─── GRID ─── -->
+        <div class="grid">
+
+            <!-- ─── LEFT: DOCUMENT TYPE MAPPER ─── -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">📋</span> Document Type Mapper</h2>
+                    <span class="badge">5 templates configured</span>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" placeholder="🔍 Search document types..." />
+                </div>
+
+                <div class="doc-type-list">
+                    <div class="doc-type-item active">
+                        <span class="name">📇 National ID Card</span>
+                        <span class="count">5</span>
+                    </div>
+                    <div class="doc-type-item">
+                        <span class="name">📄 Invoice</span>
+                        <span class="count">4</span>
+                    </div>
+                    <div class="doc-type-item">
+                        <span class="name">🛂 Passport</span>
+                        <span class="count">3</span>
+                    </div>
+                    <div class="doc-type-item">
+                        <span class="name">👤 Employee Record</span>
+                        <span class="count">3</span>
+                    </div>
+                    <div class="doc-type-item">
+                        <span class="name">🧾 Receipt</span>
+                        <span class="count">3</span>
+                    </div>
+                </div>
+
+                <button class="btn-add">➕ Add New</button>
+
+                <!-- ─── FIELD MAPPING TABLE ─── -->
+                <div style="margin-top: 24px;">
+                    <h3 style="font-size:15px; font-weight:700; color:var(--navy-900); margin-bottom:4px;">National ID Card</h3>
+                    <p style="font-size:13px; color:var(--slate-500); margin-bottom:12px;">Configure fields and database mapping</p>
+
+                    <div style="background:var(--slate-50); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:8px 24px;">
+                        <span style="font-size:13px;"><strong>Name:</strong> National ID Card</span>
+                        <span style="font-size:13px;"><strong>Description:</strong> Government-issued national ID</span>
+                        <span style="font-size:13px;"><strong>Map to DB:</strong> <span style="color:var(--blue-500);">Invoices</span></span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Document Field</th>
+                                    <th>Data Type</th>
+                                    <th>Required</th>
+                                    <th>Database Field</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input class="field-input" value="id_number" disabled /></td>
+                                    <td><input class="field-input" value="Text" disabled /></td>
+                                    <td><input class="checkbox" type="checkbox" checked disabled /></td>
+                                    <td><input class="field-input" value="invoice_id" disabled /></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="field-input" value="full_name" disabled /></td>
+                                    <td><input class="field-input" value="Text" disabled /></td>
+                                    <td><input class="checkbox" type="checkbox" checked disabled /></td>
+                                    <td><input class="field-input" value="vendor_name" disabled /></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="field-input" value="date_of_birth" disabled /></td>
+                                    <td><input class="field-input" value="Date" disabled /></td>
+                                    <td><input class="checkbox" type="checkbox" checked disabled /></td>
+                                    <td><input class="field-input" value="issue_date" disabled /></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="field-input" value="nationality" disabled /></td>
+                                    <td><input class="field-input" value="Text" disabled /></td>
+                                    <td><input class="checkbox" type="checkbox" checked disabled /></td>
+                                    <td><input class="field-input" value="notes" disabled /></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="field-input" value="expiry_date" disabled /></td>
+                                    <td><input class="field-input" value="Date" disabled /></td>
+                                    <td><input class="checkbox" type="checkbox" checked disabled /></td>
+                                    <td><input class="field-input" value="issue_date" disabled /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="action-row">
+                        <button class="btn-sm primary">➕ Add Field</button>
+                        <button class="btn-sm danger">🗑️ Delete Document Type</button>
+                        <button class="btn-save" style="margin-left:auto;">💾 Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── RIGHT: SYSTEM CONFIGURATION ─── -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">⚙️</span> System Configuration</h2>
+                    <span class="badge">Connected</span>
+                </div>
+                <div class="card-sub">Manage database connections, document templates, AI extraction, and review activity.</div>
+
+                <!-- ─── DATABASE CONNECTION ─── -->
+                <h3 style="font-size:15px; font-weight:700; color:var(--navy-900); margin-bottom:12px;">🗄️ Database Connection Settings</h3>
+                <p style="font-size:13px; color:var(--slate-500); margin-bottom:16px;">Primary PostgreSQL data store</p>
+
+                <div class="config-group">
+                    <div class="config-field">
+                        <label>Server Address</label>
+                        <input value="db.docuai.internal" disabled />
+                    </div>
+                    <div class="config-field">
+                        <label>Port</label>
+                        <input value="5432" disabled />
+                    </div>
+                    <div class="config-field">
+                        <label>Database Name</label>
+                        <input value="docuai_prod" disabled />
+                    </div>
+                    <div class="config-field">
+                        <label>Username</label>
+                        <input value="admin_svc" disabled />
+                    </div>
+                    <div class="config-field" style="grid-column: 1 / -1;">
+                        <label>Password</label>
+                        <input value="••••••••••" disabled />
+                    </div>
+                </div>
+
+                <div class="config-actions">
+                    <button class="btn-test">🔗 Test Connection</button>
+                    <button class="btn-save">💾 Save Settings</button>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--slate-100); margin: 28px 0;" />
+
+                <!-- ─── AI MODEL CONFIGURATION ─── -->
+                <h3 style="font-size:15px; font-weight:700; color:var(--navy-900); margin-bottom:12px;">🤖 AI Model Configuration</h3>
+                <p style="font-size:13px; color:var(--slate-500); margin-bottom:16px;">Connected to remote extraction service</p>
+
+                <div class="config-group">
+                    <div class="config-field" style="grid-column: 1 / -1;">
+                        <label>API Endpoint URL</label>
+                        <input value="https://api.ai-provider.com/v1/extract" disabled />
+                    </div>
+                    <div class="config-field">
+                        <label>Authentication Method</label>
+                        <input value="API Key" disabled />
+                    </div>
+                    <div class="config-field">
+                        <label>Timeout (seconds)</label>
+                        <input value="30" disabled />
+                    </div>
+                    <div class="config-field" style="grid-column: 1 / -1;">
+                        <label>API Key</label>
+                        <input value="••••••••••" disabled />
+                    </div>
+                </div>
+
+                <div class="config-actions">
+                    <button class="btn-test">🔗 Test Connection</button>
+                    <button class="btn-save">💾 Save AI Settings</button>
+                </div>
+
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--slate-100);">
+                    <button class="btn-secondary" style="width:100%; justify-content:center;">🔄 Update All</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

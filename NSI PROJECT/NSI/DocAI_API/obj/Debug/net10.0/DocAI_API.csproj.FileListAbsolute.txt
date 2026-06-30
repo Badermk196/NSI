@@ -1,0 +1,160 @@
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\appsettings.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.staticwebassets.endpoints.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.exe
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.deps.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.runtimeconfig.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.pdb
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Microsoft.OpenApi.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.csproj.AssemblyReference.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.AssemblyInfoInputs.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.AssemblyInfo.cs
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.csproj.CoreCompileInputs.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\rjimswa.dswa.cache.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\scopedcss\bundle\DocAI_API.styles.css
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\staticwebassets.build.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\staticwebassets.build.json.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\staticwebassets.development.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\swae.build.ex.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.csproj.Up2Date
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\refint\DocAI_API.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.pdb
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.genruntimeconfig.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\ref\DocAI_API.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\OpenAI.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.ClientModel.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Memory.Data.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Google.Protobuf.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\K4os.Compression.LZ4.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\K4os.Compression.LZ4.Streams.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\K4os.Hash.xxHash.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\MySql.Data.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Security.Permissions.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Windows.Extensions.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\ZstdSharp.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\comerr64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\gssapi64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\k5sprt64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\krb5_64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\krbcc64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\x86\leptonica-1.82.0.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\x86\tesseract50.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\x64\leptonica-1.82.0.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\x64\tesseract50.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Core.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.DocumentLayoutAnalysis.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Fonts.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Package.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Tokenization.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Tokens.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Drawing.Common.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Private.Windows.Core.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Private.Windows.GdiPlus.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Tesseract.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win\lib\net10.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocumentFormat.OpenXml.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocumentFormat.OpenXml.Framework.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Microsoft.Office.Interop.Word.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.IO.Packaging.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\PdfiumViewer.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\nl\PdfiumViewer.resources.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\itextsharp.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\appsettings.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.staticwebassets.endpoints.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\x86\leptonica-1.82.0.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\x86\tesseract50.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\x64\leptonica-1.82.0.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\x64\tesseract50.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.exe
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.deps.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.runtimeconfig.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocAI_API.pdb
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocumentFormat.OpenXml.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\DocumentFormat.OpenXml.Framework.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Google.Protobuf.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\itextsharp.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\K4os.Compression.LZ4.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\K4os.Compression.LZ4.Streams.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\K4os.Hash.xxHash.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Microsoft.Office.Interop.Word.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Microsoft.OpenApi.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\MySql.Data.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\OpenAI.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\PdfiumViewer.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Core.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.DocumentLayoutAnalysis.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Fonts.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Package.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Tokenization.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.Tokens.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\UglyToad.PdfPig.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.ClientModel.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Drawing.Common.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Private.Windows.Core.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Private.Windows.GdiPlus.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.IO.Packaging.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Memory.Data.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Security.Permissions.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\System.Windows.Extensions.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\Tesseract.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\ZstdSharp.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\nl\PdfiumViewer.resources.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win\lib\net10.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\comerr64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\gssapi64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\k5sprt64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\krb5_64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win-x64\native\krbcc64.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\bin\Debug\net10.0\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.csproj.AssemblyReference.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.AssemblyInfoInputs.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.AssemblyInfo.cs
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.csproj.CoreCompileInputs.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\rjimswa.dswa.cache.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\scopedcss\bundle\DocAI_API.styles.css
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\staticwebassets.build.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\staticwebassets.build.json.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\staticwebassets.development.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\swae.build.ex.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.csproj.Up2Date
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\refint\DocAI_API.dll
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.pdb
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\DocAI_API.genruntimeconfig.cache
+C:\Users\Bader\OneDrive\Desktop\NSI PROJECT (2)\NSI PROJECT\NSI\DocAI_API\obj\Debug\net10.0\ref\DocAI_API.dll
