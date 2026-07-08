@@ -592,6 +592,55 @@
             transform: scale(0.95);
         }
 
+        /* ─── LIVE DOCUMENT PREVIEW (NEW) ─── */
+        .doc-real-preview {
+            display: none;
+            width: 100%;
+            flex: 1;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--emerald-100);
+            background: #FFFFFF;
+            margin-bottom: 14px;
+        }
+
+        .doc-real-preview.show {
+            display: flex;
+        }
+
+        .doc-real-preview embed,
+        .doc-real-preview iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+            border: none;
+            display: block;
+        }
+
+        .doc-real-preview img {
+            width: 100%;
+            max-height: 380px;
+            object-fit: contain;
+            display: block;
+            background: var(--slate-50);
+            margin: auto;
+        }
+
+        .doc-real-preview pre {
+            width: 100%;
+            max-height: 380px;
+            overflow: auto;
+            margin: 0;
+            padding: 16px 18px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: var(--slate-50);
+            color: var(--navy-900);
+            font-family: 'SFMono-Regular', Consolas, monospace;
+        }
+
         /* ─── TOAST ─── */
         .toast-container {
             position: fixed;
@@ -784,7 +833,11 @@
                 <div class="card-sub">View the uploaded document alongside extracted data.</div>
 
                 <div class="doc-preview has-file" id="docPreview">
-                    <div class="doc-icon-wrap">
+
+                    <!-- Live rendered preview (PDF/image/text) — populated by JS, hidden if unavailable -->
+                    <div class="doc-real-preview" id="docRealPreview"></div>
+
+                    <div class="doc-icon-wrap" id="docIconWrap">
                         <div class="doc-icon" id="docIcon">📄</div>
                     </div>
                     <div class="doc-name" id="docName">document_april.pdf</div>
@@ -914,6 +967,45 @@
                 });
             }
 
+            // ── Render the live document preview (PDF/image/text) carried over from the upload page ──
+            function renderDocPreview() {
+                const dataUrl = sessionStorage.getItem('docPreviewDataUrl');
+                const previewFileName = sessionStorage.getItem('docPreviewFileName') || fileNameDisplay.value || '';
+                const container = document.getElementById('docRealPreview');
+                const iconWrap = document.getElementById('docIconWrap');
+
+                if (!dataUrl) return; // No preview carried over — keep the default icon display
+
+                const ext = (previewFileName.split('.').pop() || '').toLowerCase();
+                let el = null;
+
+                if (ext === 'pdf') {
+                    el = document.createElement('embed');
+                    el.src = dataUrl;
+                    el.type = 'application/pdf';
+                } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
+                    el = document.createElement('img');
+                    el.src = dataUrl;
+                    el.alt = previewFileName;
+                } else if (ext === 'txt') {
+                    el = document.createElement('pre');
+                    try {
+                        const base64 = dataUrl.split(',')[1];
+                        el.textContent = decodeURIComponent(escape(atob(base64)));
+                    } catch (e) {
+                        el.textContent = 'Preview unavailable.';
+                    }
+                }
+                // .docx (or anything else) → no inline renderer, keep the icon-based fallback
+
+                if (el) {
+                    container.innerHTML = '';
+                    container.appendChild(el);
+                    container.classList.add('show');
+                    if (iconWrap) iconWrap.style.display = 'none';
+                }
+            }
+
             // ── Load Data from Session Storage ──
             function loadDataFromSession() {
             const storedDocType = sessionStorage.getItem('docType');
@@ -960,6 +1052,8 @@
                 const now = new Date();
                 docId = `DOC-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
                 docIdInput.value = docId;
+
+                renderDocPreview();
             }
 
             // ── Helpers ──
@@ -1077,10 +1171,39 @@
 
             // ── Document Actions ──
             window.handleDownload = function() {
+                const dataUrl = sessionStorage.getItem('docPreviewDataUrl');
+                const name = sessionStorage.getItem('docPreviewFileName') || fileNameDisplay.value || 'document';
+
+                if (!dataUrl) {
+                    showToast('⚠️ No preview file available to download.', 'error');
+                    return;
+                }
+
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = name;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
                 showToast('⬇ Downloading document…', 'success');
             };
 
             window.handleFullscreen = function() {
+                const dataUrl = sessionStorage.getItem('docPreviewDataUrl');
+
+                if (!dataUrl) {
+                    showToast('⚠️ No preview file available.', 'error');
+                    return;
+                }
+
+                const win = window.open('', '_blank');
+                if (win) {
+                    win.document.write(`<iframe src="${dataUrl}" style="border:none;width:100%;height:100vh;"></iframe>`);
+                    win.document.title = sessionStorage.getItem('docPreviewFileName') || 'Document Preview';
+                } else {
+                    showToast('⚠️ Pop-up blocked. Please allow pop-ups to view full screen.', 'error');
+                    return;
+                }
                 showToast('🖥 Full screen preview opened.', 'info');
             };
 
