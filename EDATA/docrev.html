@@ -17,6 +17,7 @@
             background: #F1F5F9;
             min-height: 100vh;
             padding: 24px;
+            color: #0F172A;
         }
 
         .container {
@@ -39,24 +40,41 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
         }
 
-        .header-left .logo img {
-            height: 60px;
-            width: auto;
-            object-fit: contain;
-            filter: brightness(0) invert(1);
+        .brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
         }
 
-        .header-left .title h1 {
+        .brand-name {
             font-size: 26px;
             font-weight: 700;
             color: #FFFFFF;
+            letter-spacing: 0.5px;
         }
 
-        .header-left .title .sub {
-            font-size: 14px;
+        .title-group {
+            display: flex;
+            flex-direction: column;
+            margin-left: 16px;
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            padding-left: 16px;
+        }
+
+        .title-group h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-group .sub {
+            font-size: 13px;
             color: #94A3B8;
         }
 
@@ -104,47 +122,78 @@
             display: grid;
             grid-template-columns: 280px 1fr;
             gap: 24px;
+            align-items: stretch;
         }
 
         /* ─── LEFT SIDEBAR ─── */
         .sidebar {
             background: white;
             border-radius: 16px;
-            padding: 24px 20px;
+            padding: 20px 16px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-            max-height: 600px;
-            overflow-y: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
-        .sidebar-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #0F172A;
-            margin-bottom: 16px;
+        .sidebar-header {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-shrink: 0;
         }
 
-        .sidebar-title .badge {
+        .sidebar-search {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .sidebar-search:focus {
+            border-color: #3B82F6;
+        }
+
+        .sidebar-add-btn {
+            width: 34px;
+            height: 34px;
             background: #3B82F6;
             color: white;
-            font-size: 11px;
-            padding: 1px 10px;
-            border-radius: 100px;
+            border: none;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .sidebar-add-btn:hover {
+            background: #2563EB;
         }
 
         .doc-list {
             display: flex;
             flex-direction: column;
             gap: 6px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
         }
 
         .doc-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
+            gap: 10px;
+            padding: 10px 12px;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -161,7 +210,7 @@
         }
 
         .doc-item .doc-icon {
-            font-size: 20px;
+            font-size: 18px;
         }
 
         .doc-item .doc-name {
@@ -174,26 +223,18 @@
             text-overflow: ellipsis;
         }
 
-        .doc-item .doc-status {
+        .doc-item .doc-type {
             font-size: 11px;
-            font-weight: 500;
-            padding: 2px 10px;
-            border-radius: 100px;
+            background: #F1F5F9;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #475569;
+            white-space: nowrap;
         }
 
-        .doc-item .doc-status.success {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-
-        .doc-item .doc-status.processing {
-            background: #FEF3C7;
-            color: #92400E;
-        }
-
-        .doc-item .doc-status.error {
-            background: #FEE2E2;
-            color: #991B1B;
+        .doc-item.active .doc-type {
+            background: #DBEAFE;
+            color: #1D4ED8;
         }
 
         /* ─── RIGHT PANEL ─── */
@@ -202,15 +243,18 @@
             border-radius: 16px;
             padding: 24px 28px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            min-height: 600px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 12px;
+            margin-bottom: 24px;
+            flex-shrink: 0;
         }
 
         .panel-header h2 {
@@ -219,128 +263,152 @@
             color: #0F172A;
         }
 
-        .panel-header .actions input {
-            padding: 8px 16px;
-            border: 1.5px solid #E2E8F0;
-            border-radius: 10px;
-            font-size: 13px;
-            font-family: inherit;
-            min-width: 200px;
-            outline: none;
-            transition: border-color 0.2s;
+        /* ─── DETAIL VIEW LAYOUT ─── */
+        .detail-layout {
+            display: flex;
+            gap: 24px;
+            flex: 1;
         }
 
-        .panel-header .actions input:focus {
-            border-color: #3B82F6;
+        .detail-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 8px;
+            border-right: 1px solid #F1F4F9;
         }
 
-        /* ─── TABLE ─── */
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        thead th {
+        .preview-column {
+            flex: 1;
             background: #F8FAFC;
-            padding: 12px 14px;
-            text-align: left;
-            font-weight: 600;
-            color: #475569;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            border-bottom: 2px solid #E2E8F0;
-            white-space: nowrap;
-        }
-
-        tbody td {
-            padding: 12px 14px;
-            border-bottom: 1px solid #F1F4F9;
-            color: #1E293B;
-            vertical-align: middle;
-        }
-
-        tbody tr:hover {
-            background: #F8FAFC;
-        }
-
-        /* ─── STATUS BADGE ─── */
-        .status-badge-table {
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 11px;
-            font-weight: 500;
-            display: inline-block;
-            min-width: 70px;
-            text-align: center;
-        }
-
-        .status-badge-table.success {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-
-        .status-badge-table.processing {
-            background: #FEF3C7;
-            color: #92400E;
-        }
-
-        .status-badge-table.error {
-            background: #FEE2E2;
-            color: #991B1B;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ─── ACTION BUTTONS ─── */
-        .actions-cell {
+        .preview-actions {
             display: flex;
-            gap: 6px;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #E2E8F0;
             flex-wrap: wrap;
-            align-items: center;
+            flex-shrink: 0;
         }
 
         .btn-action {
-            padding: 5px 14px;
+            padding: 6px 16px;
             border: none;
             border-radius: 6px;
-            font-size: 11px;
-            font-weight: 500;
+            font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             font-family: inherit;
-            min-width: 50px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .btn-action.edit {
             background: #F59E0B;
             color: white;
         }
-
-        .btn-action.edit:hover {
-            background: #D97706;
-        }
-
+        .btn-action.edit:hover { background: #D97706; }
+        
         .btn-action.delete {
             background: #EF4444;
             color: white;
         }
-
-        .btn-action.delete:hover {
-            background: #DC2626;
-        }
-
+        .btn-action.delete:hover { background: #DC2626; }
+        
         .btn-action.view {
             background: #3B82F6;
             color: white;
         }
+        .btn-action.view:hover { background: #2563EB; }
 
-        .btn-action.view:hover {
-            background: #2563EB;
+        .btn-action.save {
+            background: #10B981;
+            color: white;
+        }
+        .btn-action.save:hover { background: #059669; }
+
+        /* ─── PREVIEW AREA ─── */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94A3B8;
+            border: 2px dashed #E2E8F0;
+            border-radius: 10px;
+            background: #FFFFFF;
+            position: relative;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .preview-area .file-icon {
+            font-size: 64px;
+            margin-bottom: 12px;
+        }
+
+        .preview-area .file-name {
+            font-weight: 600;
+            color: #1E293B;
+            font-size: 16px;
+        }
+
+        /* ─── FIELD ROWS ─── */
+        .field-group {
+            margin-bottom: 8px;
+        }
+
+        .field-group .field-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+
+        .field-group .field-value {
+            font-size: 15px;
+            color: #0F172A;
+            font-weight: 500;
+            padding: 4px 0;
+            word-break: break-word;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1.5px solid #3B82F6;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            background: #F8FAFC;
+            margin-top: 2px;
+            color: #0F172A;
+        }
+
+        .edit-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .field-divider {
+            height: 1px;
+            background: #E2E8F0;
+            margin: 8px 0 12px 0;
         }
 
         /* ─── EMPTY STATE ─── */
@@ -348,6 +416,12 @@
             text-align: center;
             padding: 40px 20px;
             color: #94A3B8;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
         }
 
         .empty-state .icon {
@@ -358,6 +432,94 @@
 
         .empty-state.hidden {
             display: none;
+        }
+
+        /* ─── MODAL (VIEW) ─── */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.modal-hidden {
+            display: none !important;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #475569;
+            border: none;
+            background: none;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #0F172A;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding-right: 40px;
+        }
+
+        .modal-preview {
+            width: 100%;
+            height: 400px;
+            background: #F8FAFC;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #E2E8F0;
+            color: #94A3B8;
+            font-size: 14px;
+        }
+
+        .modal-data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .modal-data-item {
+            background: #F8FAFC;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+        .modal-data-item strong { 
+            display: block; 
+            color: #64748B; 
+            font-size: 12px; 
+            text-transform: uppercase;
+        }
+        .modal-data-item span {
+            font-size: 15px; 
+            font-weight: 500;
+            color: #0F172A;
         }
 
         /* ─── TOAST ─── */
@@ -394,52 +556,21 @@
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            .sidebar {
-                max-height: 200px;
-            }
-            .doc-list {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            .doc-item {
-                flex: 1 0 auto;
-                min-width: 150px;
-            }
+            .main-content { grid-template-columns: 1fr; }
+            .sidebar { max-height: 350px; }
+            .detail-layout { flex-direction: column; }
+            .detail-column { border-right: none; padding-right: 0; border-bottom: 1px solid #F1F4F9; padding-bottom: 16px; }
+            .preview-column { min-height: 300px; }
+            .modal-data-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 600px) {
             body { padding: 16px; }
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-                padding: 16px 20px;
-            }
-            .header-left {
-                flex-wrap: wrap;
-                gap: 12px;
-            }
-            .header-left .logo img { height: 44px; }
-            .header-left .title h1 { font-size: 20px; }
-            .header-right {
-                flex-wrap: wrap;
-                width: 100%;
-            }
-            .panel-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .panel-header .actions input {
-                min-width: auto;
-                width: 100%;
-            }
+            .header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 20px; }
+            .header-left { flex-wrap: wrap; gap: 8px; width: 100%; }
+            .title-group { margin-left: 0; border-left: none; padding-left: 0; width: 100%; }
+            .header-right { flex-wrap: wrap; width: 100%; }
             .toast-container { right: 16px; left: 16px; max-width: none; }
-            table { font-size: 12px; }
-            thead th, tbody td { padding: 8px 10px; }
-            .btn-action { padding: 4px 10px; font-size: 10px; min-width: 40px; }
         }
     </style>
 </head>
@@ -460,7 +591,8 @@
             </div>
             <div class="header-right">
                 <span class="record-count" id="recordCount">0 Records</span>
-                <a href="upload.html" class="btn-upload">📤 Upload New</a>
+                <!-- UPDATED: Added target="_blank" to open in a new tab -->
+                <a href="index-upload.html" target="_blank" class="btn-upload">📤 Upload New</a>
             </div>
         </header>
 
@@ -469,9 +601,10 @@
 
             <!-- ─── LEFT SIDEBAR ─── -->
             <aside class="sidebar">
-                <div class="sidebar-title">
-                    📄 Documents
-                    <span class="badge" id="docBadge">0</span>
+                <div class="sidebar-header">
+                    <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Search documents..." />
+                    <!-- UPDATED: Added target="_blank" to open in a new tab -->
+                    <a href="index-upload.html" target="_blank" class="sidebar-add-btn" title="Add new document">+</a>
                 </div>
                 <div class="doc-list" id="docList">
                     <div class="empty-state" id="emptyDocs">
@@ -485,33 +618,27 @@
             <section class="panel">
                 <div class="panel-header">
                     <h2>📊 Extracted Data</h2>
-                    <div class="actions">
-                        <input type="text" id="searchInput" placeholder="🔍 Search documents..." />
+                </div>
+
+                <!-- Dynamic Detail View -->
+                <div id="detailView" style="flex: 1; display: flex;">
+                    <div class="empty-state" style="flex: 1;">
+                        <span class="icon">📂</span>
+                        <p>Select a document from the sidebar to view its details.</p>
                     </div>
-                </div>
-
-                <div class="table-wrapper">
-                    <table>
-                        <thead id="tableHead">
-                            <tr>
-                                <th>Document</th>
-                                <th>Type</th>
-                                <th>Data</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
-
-                <div class="empty-state" id="emptyTable">
-                    <span class="icon">📭</span>
-                    <p>No extracted data available.</p>
-                    <p style="font-size:13px; margin-top:4px;">Upload a document to get started.</p>
                 </div>
             </section>
 
+        </div>
+    </div>
+
+    <!-- ─── VIEW MODAL ─── -->
+    <div id="viewModal" class="modal-overlay modal-hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modalBody">
+                <!-- Modal content injected here -->
+            </div>
         </div>
     </div>
 
@@ -523,167 +650,304 @@
         (() => {
             'use strict';
 
-            const API_BASE = 'http://localhost:5018';
             let allRecords = [];
+            let selectedId = null;
+            let isEditing = false;
 
             const docList = document.getElementById('docList');
-            const docBadge = document.getElementById('docBadge');
             const recordCount = document.getElementById('recordCount');
-            const tableBody = document.getElementById('tableBody');
-            const tableHead = document.getElementById('tableHead');
-            const emptyTable = document.getElementById('emptyTable');
-            const emptyDocs = document.getElementById('emptyDocs');
-            const searchInput = document.getElementById('searchInput');
+            const detailView = document.getElementById('detailView');
+            const sidebarSearch = document.getElementById('sidebarSearch');
 
             // ── Document Type Display Names ──
             const DOC_TYPE_NAMES = {
-                'Invoice': '📄 Invoice',
-                'NationalID': '🪪 National ID',
-                'Passport': '🛂 Passport',
-                'EmployeeRecord': '👤 Employee Record',
-                'Receipt': '🧾 Receipt'
+                'Invoice': 'Invoice',
+                'NationalID': 'National ID',
+                'Passport': 'Passport',
+                'EmployeeRecord': 'Employee',
+                'Receipt': 'Receipt'
+            };
+            
+            const DOC_TYPE_ICONS = {
+                'Invoice': '📄',
+                'NationalID': '🪪',
+                'Passport': '🛂',
+                'EmployeeRecord': '👤',
+                'Receipt': '🧾'
             };
 
-            // ── Helper to get display fields from data ──
-            function getDisplayFields(rec) {
-                if (!rec.data) return [];
-
+            // ── Helper to get fields from record ──
+            function getDataFields(rec) {
+                if (!rec || !rec.data) return [];
                 try {
                     const data = typeof rec.data === 'string' ? JSON.parse(rec.data) : rec.data;
                     const fields = [];
                     const exclude = ['docId', 'docType', 'fileName'];
-
                     for (const [key, value] of Object.entries(data)) {
-                        if (!exclude.includes(key) && value) {
+                        if (!exclude.includes(key) && value !== null && value !== undefined && value !== '') {
                             const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                            fields.push({ label, value });
+                            fields.push({ key, label, value });
                         }
                     }
-                    return fields.slice(0, 3); // Show first 3 fields
+                    return fields;
                 } catch {
                     return [];
                 }
             }
 
-            // ── Render Table with Dynamic Columns ──
-            function renderTable(records) {
-                const tbody = tableBody;
-                const empty = emptyTable;
-
-                tbody.innerHTML = '';
-
-                if (!records || records.length === 0) {
-                    empty.classList.remove('hidden');
-                    tbody.style.display = 'none';
-                    recordCount.textContent = '0 Records';
-                    return;
-                }
-
-                empty.classList.add('hidden');
-                tbody.style.display = 'table-row-group';
-                recordCount.textContent = records.length + ' Records';
-
-                records.forEach((rec) => {
-                    const displayFields = getDisplayFields(rec);
-                    const docTypeName = DOC_TYPE_NAMES[rec.docType] || rec.docType || 'Document';
-
-                    // Build data column content
-                    let dataHtml = '';
-                    if (displayFields.length > 0) {
-                        dataHtml = displayFields.map(f =>
-                            `<div style="font-size:12px; padding:2px 0; border-bottom:1px solid #F1F4F9; display:flex; justify-content:space-between;">
-                                <span style="color:#64748B; font-weight:500;">${f.label}:</span>
-                                <span style="color:#0F172A; font-weight:600;">${f.value}</span>
-                            </div>`
-                        ).join('');
-                    } else {
-                        dataHtml = '<span style="color:#94A3B8; font-size:12px;">No data</span>';
-                    }
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>${rec.fileName || rec.document || 'N/A'}</strong></td>
-                        <td><span style="font-size:12px;">${docTypeName}</span></td>
-                        <td style="min-width:180px;">${dataHtml}</td>
-                        <td>${getStatusBadge(rec.status || 'Extracted Successfully')}</td>
-                        <td>
-                            <div class="actions-cell">
-                                <button class="btn-action edit" onclick="handleEdit(${rec.id || 0})">✏️ Edit</button>
-                                <button class="btn-action delete" onclick="handleDelete(${rec.id || 0})">🗑️ Delete</button>
-                                <button class="btn-action view" onclick="handleView(${rec.id || 0})">👁️ View</button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            function getStatusBadge(status) {
-                const map = {
-                    'Extracted Successfully': 'success',
-                    'Extracted': 'success',
-                    'Processing': 'processing',
-                    'Error': 'error',
-                };
-                const cls = map[status] || 'processing';
-                return `<span class="status-badge-table ${cls}">${status || 'Processing'}</span>`;
-            }
-
+            // ── Render Sidebar ──
             function renderSidebar(records) {
                 const list = docList;
-                const empty = emptyDocs;
-
-                const emptyEl = list.querySelector('.empty-state');
-                if (emptyEl) emptyEl.remove();
-
+                // Clear existing items except the empty state
                 list.querySelectorAll('.doc-item').forEach(el => el.remove());
 
                 if (!records || records.length === 0) {
-                    list.appendChild(emptyDocs);
-                    docBadge.textContent = '0';
+                    if(!document.getElementById('emptyDocs')) {
+                        list.appendChild(emptyDocs);
+                    }
                     return;
                 }
 
-                docBadge.textContent = records.length;
+                // Remove empty state if it exists
+                const emptyEl = document.getElementById('emptyDocs');
+                if(emptyEl) emptyEl.remove();
 
-                records.forEach((rec, index) => {
+                records.forEach((rec) => {
                     const div = document.createElement('div');
-                    div.className = 'doc-item' + (index === 0 ? ' active' : '');
-                    const icon = rec.fileName ? getFileIcon(rec.fileName) : '📄';
+                    div.className = 'doc-item' + (rec.id === selectedId ? ' active' : '');
+                    const icon = DOC_TYPE_ICONS[rec.docType] || '📄';
+                    const type = DOC_TYPE_NAMES[rec.docType] || rec.docType || 'Document';
+                    
                     div.innerHTML = `
                         <span class="doc-icon">${icon}</span>
-                        <span class="doc-name">${rec.fileName || rec.document || 'Unknown'}</span>
-                        <span class="doc-status success">✅ Done</span>
+                        <span class="doc-name">${rec.fileName || 'Unknown'}</span>
+                        <span class="doc-type">${type}</span>
                     `;
+                    div.onclick = () => selectRecord(rec.id);
                     list.appendChild(div);
                 });
             }
 
-            function getFileIcon(name) {
-                if (!name) return '📄';
-                const ext = name.split('.').pop().toLowerCase();
-                const icons = { pdf: '📄', docx: '📃', doc: '📃', png: '🖼️', jpg: '🖼️', jpeg: '🖼️' };
-                return icons[ext] || '📎';
+            // ── Select Record ──
+            function selectRecord(id) {
+                selectedId = id;
+                isEditing = false;
+                const rec = allRecords.find(r => r.id === id);
+                renderSidebar(allRecords);
+                if (rec) {
+                    renderDetailView(rec);
+                } else {
+                    detailView.innerHTML = `
+                        <div class="empty-state" style="flex: 1;">
+                            <span class="icon">📭</span>
+                            <p>Record not found.</p>
+                        </div>
+                    `;
+                }
             }
 
-            function searchRecords(query) {
+            // ── Render Detail View ──
+            function renderDetailView(rec) {
+                const fields = getDataFields(rec);
+                const type = DOC_TYPE_NAMES[rec.docType] || rec.docType || 'Document';
+                const icon = DOC_TYPE_ICONS[rec.docType] || '📄';
+
+                // Build left column (Fields)
+                let leftHtml = `
+                    <div class="field-group">
+                        <span class="field-label">Document</span>
+                        <div class="field-value">${rec.fileName}</div>
+                    </div>
+                    <div class="field-group">
+                        <span class="field-label">Type</span>
+                        <div class="field-value">${type}</div>
+                    </div>
+                    <div class="field-divider"></div>
+                `;
+
+                fields.forEach(f => {
+                    leftHtml += `
+                        <div class="field-group editable-field">
+                            <span class="field-label">${f.label}</span>
+                            <div class="field-value" data-key="${f.key}">${f.value}</div>
+                        </div>
+                    `;
+                });
+
+                // Build right column (Preview & Actions)
+                let rightHtml = `
+                    <div class="preview-actions">
+                        <button class="btn-action edit" id="btnEdit" onclick="handleEdit()">✏️ Edit</button>
+                        <button class="btn-action delete" onclick="handleDelete()">🗑️ Delete</button>
+                        <button class="btn-action view" onclick="handleView()">👁️ View</button>
+                    </div>
+                    <div class="preview-area">
+                        <div class="file-icon">${icon}</div>
+                        <div class="file-name">${rec.fileName}</div>
+                        <p style="margin-top: 8px; font-size: 13px;">Document Preview</p>
+                    </div>
+                `;
+
+                detailView.innerHTML = `
+                    <div class="detail-layout" style="width: 100%;">
+                        <div class="detail-column" id="detailFieldsContainer">
+                            ${leftHtml}
+                        </div>
+                        <div class="preview-column">
+                            ${rightHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // ── Handle Edit (Toggle and Save) ──
+            window.handleEdit = function() {
+                if (!selectedId) return;
+                const rec = allRecords.find(r => r.id === selectedId);
+                if (!rec) return;
+
+                isEditing = !isEditing;
+                const fieldsContainer = document.getElementById('detailFieldsContainer');
+                const btnEdit = document.getElementById('btnEdit');
+
+                if (isEditing) {
+                    // Switch to Inputs
+                    fieldsContainer.querySelectorAll('.editable-field .field-value').forEach(el => {
+                        const val = el.innerText;
+                        el.innerHTML = `<input class="edit-input" value="${val}" data-key="${el.dataset.key}" />`;
+                    });
+                    btnEdit.className = 'btn-action save';
+                    btnEdit.innerText = '💾 Save';
+                } else {
+                    // Save Data
+                    const inputs = fieldsContainer.querySelectorAll('.edit-input');
+                    inputs.forEach(input => {
+                        const key = input.dataset.key;
+                        if (key) {
+                            rec.data[key] = input.value;
+                        }
+                    });
+                    
+                    // Update global data
+                    const index = allRecords.findIndex(r => r.id === selectedId);
+                    if (index !== -1) allRecords[index] = rec;
+
+                    btnEdit.className = 'btn-action edit';
+                    btnEdit.innerText = '✏️ Edit';
+                    renderDetailView(rec);
+                    showToast('✅ Data updated successfully.', 'success');
+                }
+            };
+
+            // ── Handle Delete ──
+            window.handleDelete = function() {
+                if (!selectedId || !confirm('Are you sure you want to delete this record?')) return;
+                
+                allRecords = allRecords.filter(r => r.id !== selectedId);
+                selectedId = null;
+                isEditing = false;
+                
+                renderSidebar(allRecords);
+                recordCount.textContent = allRecords.length + ' Records';
+                
+                // Show empty state on right
+                detailView.innerHTML = `
+                    <div class="empty-state" style="flex: 1;">
+                        <span class="icon">📭</span>
+                        <p>Record deleted. Select a document from the sidebar.</p>
+                    </div>
+                `;
+                showToast('🗑️ Record deleted successfully.', 'success');
+            };
+
+            // ── Handle View (Modal) ──
+            window.handleView = function() {
+                if (!selectedId) return;
+                const rec = allRecords.find(r => r.id === selectedId);
+                if (!rec) return;
+
+                const fields = getDataFields(rec);
+                const type = DOC_TYPE_NAMES[rec.docType] || rec.docType || 'Document';
+                const icon = DOC_TYPE_ICONS[rec.docType] || '📄';
+
+                const modal = document.getElementById('viewModal');
+                const modalBody = document.getElementById('modalBody');
+
+                let dataGrid = '<div class="modal-data-grid">';
+                fields.forEach(f => {
+                    dataGrid += `
+                        <div class="modal-data-item">
+                            <strong>${f.label}</strong>
+                            <span>${f.value}</span>
+                        </div>
+                    `;
+                });
+                dataGrid += '</div>';
+
+                modalBody.innerHTML = `
+                    <h2 class="modal-title">${icon} ${rec.fileName}</h2>
+                    <div style="margin-bottom: 16px; color: #475569;">Type: <strong>${type}</strong></div>
+                    
+                    <div class="modal-preview">
+                        <div style="text-align: center;">
+                            <div style="font-size: 64px;">${icon}</div>
+                            <p style="font-weight: 600; margin-top: 8px;">${rec.fileName}</p>
+                            <p style="font-size: 13px; color: #94A3B8;">Document Expanded View</p>
+                        </div>
+                    </div>
+                    <h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: #475569;">Extracted Data</h3>
+                    ${dataGrid}
+                `;
+
+                modal.classList.remove('modal-hidden');
+            };
+
+            // ── Close Modal ──
+            window.closeModal = function() {
+                document.getElementById('viewModal').classList.add('modal-hidden');
+            };
+            // Close modal on background click
+            document.getElementById('viewModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
+            // ── Update Count ──
+            function updateRecordCount() {
+                recordCount.textContent = allRecords.length + ' Records';
+            }
+
+            // ── Search (Sidebar only) ──
+            function filterRecords(query) {
                 if (!query.trim()) {
-                    renderTable(allRecords);
                     renderSidebar(allRecords);
                     return;
                 }
                 const q = query.toLowerCase();
                 const filtered = allRecords.filter(r => {
-                    const docTypeName = DOC_TYPE_NAMES[r.docType] || r.docType || '';
-                    return (r.fileName || '').toLowerCase().includes(q) ||
-                           (r.docType || '').toLowerCase().includes(q) ||
-                           docTypeName.toLowerCase().includes(q);
+                    const type = DOC_TYPE_NAMES[r.docType] || r.docType || '';
+                    return (r.fileName || '').toLowerCase().includes(q) || type.toLowerCase().includes(q);
                 });
-                renderTable(filtered);
                 renderSidebar(filtered);
             }
 
-            // ── Mock Data with Document Types ──
+            sidebarSearch.addEventListener('input', function() { filterRecords(this.value); });
+
+            // ── Toast ──
+            function showToast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => toast.remove(), 500);
+                }, 3500);
+            }
+            window.showToast = showToast;
+
+            // ── Mock Data ──
             function getMockData() {
                 return [
                     {
@@ -756,60 +1020,15 @@
                 ];
             }
 
-            // ── Global Actions ──
-            window.handleEdit = function(id) {
-                const rec = allRecords.find(r => r.id === id);
-                if (rec) {
-                    showToast(`✏️ Editing: ${rec.fileName || rec.document}`, 'info');
-                    // Store data in sessionStorage and redirect to index.html
-                    sessionStorage.setItem('editData', JSON.stringify(rec));
-                    window.location.href = `index.html?edit=${id}`;
-                }
-            };
-
-            window.handleDelete = function(id) {
-                if (!confirm('Are you sure you want to delete this record?')) return;
-                allRecords = allRecords.filter(r => r.id !== id);
-                renderSidebar(allRecords);
-                renderTable(allRecords);
-                showToast('🗑️ Record deleted successfully.', 'success');
-            };
-
-            window.handleView = function(id) {
-                const rec = allRecords.find(r => r.id === id);
-                if (rec) {
-                    const displayFields = getDisplayFields(rec);
-                    let msg = `📄 ${rec.fileName}\n📋 Type: ${DOC_TYPE_NAMES[rec.docType] || rec.docType}\n`;
-                    displayFields.forEach(f => {
-                        msg += `\n${f.label}: ${f.value}`;
-                    });
-                    alert(msg);
-                }
-            };
-
-            // ── Toast ──
-            function showToast(message, type = 'info') {
-                const container = document.getElementById('toastContainer');
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                toast.textContent = message;
-                container.appendChild(toast);
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                    toast.style.transition = 'opacity 0.5s ease';
-                    setTimeout(() => toast.remove(), 500);
-                }, 3500);
-            }
-
-            // ── Search ──
-            searchInput.addEventListener('input', function() {
-                searchRecords(this.value);
-            });
-
-            // ── Load Data ──
+            // ── Init ──
             allRecords = getMockData();
-            renderSidebar(allRecords);
-            renderTable(allRecords);
+            updateRecordCount();
+            // Auto-select the first record
+            if (allRecords.length > 0) {
+                selectRecord(allRecords[0].id);
+            } else {
+                renderSidebar(allRecords);
+            }
 
         })();
     </script>
