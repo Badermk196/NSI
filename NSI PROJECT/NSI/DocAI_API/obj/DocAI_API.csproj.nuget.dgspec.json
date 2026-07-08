@@ -66,9 +66,17 @@
               "target": "Package",
               "version": "[9.7.0, )"
             },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[10.0.3, )"
+            },
             "OpenAI": {
               "target": "Package",
               "version": "[2.11.0, )"
+            },
+            "PDFtoImage": {
+              "target": "Package",
+              "version": "[4.1.0, )"
             },
             "PdfPig": {
               "target": "Package",

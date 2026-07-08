@@ -14,6 +14,28 @@ public static class MrzParser
         public string DocumentType { get; set; } = "";
     }
 
+    // Common OCR confusions: letters that look like digits, and vice versa.
+    // These get applied selectively depending on whether a position is expected
+    // to be numeric (dates, check digits) or alphabetic (nationality, sex).
+    private static readonly Dictionary<char, char> DigitLooksLikeLetter = new()
+    {
+        ['0'] = 'O',
+        ['1'] = 'I',
+        ['5'] = 'S',
+        ['8'] = 'B',
+        ['2'] = 'Z'
+    };
+
+    private static readonly Dictionary<char, char> LetterLooksLikeDigit = new()
+    {
+        ['O'] = '0',
+        ['I'] = '1',
+        ['L'] = '1',
+        ['S'] = '5',
+        ['B'] = '8',
+        ['Z'] = '2'
+    };
+
     public static MrzResult? TryParse(string rawText)
     {
         if (string.IsNullOrWhiteSpace(rawText)) return null;
@@ -29,6 +51,11 @@ public static class MrzParser
 
     private static MrzResult? TryParseTd3(List<string> lines)
     {
+        // Strict pattern first (clean OCR), then a relaxed pattern that tolerates
+        // digit/letter confusion in the nationality slot.
+        var strictPattern = @"^[A-Z0-9<]{9}\d[A-Z]{3}\d{6}\d[MFX<]\d{6}\d";
+        var relaxedPattern = @"^[A-Z0-9<]{9}[A-Z0-9][A-Z0-9]{3}[A-Z0-9]{6}[A-Z0-9][MFX<][A-Z0-9]{6}[A-Z0-9]";
+
         for (int i = 0; i < lines.Count - 1; i++)
         {
             var l1 = NormalizeMrzLine(lines[i]);
@@ -37,13 +64,16 @@ public static class MrzParser
             if (!l1.StartsWith("P<") && !l1.StartsWith("P<<") && !(l1.StartsWith("P") && l1.Length > 5 && l1[1] == '<'))
                 continue;
 
-            if (!Regex.IsMatch(l2, @"^[A-Z0-9<]{9}\d[A-Z]{3}\d{6}\d[MFX<]\d{6}\d"))
+            bool isStrict = Regex.IsMatch(l2, strictPattern);
+            bool isRelaxed = !isStrict && l2.Length >= 28 && Regex.IsMatch(l2, relaxedPattern);
+
+            if (!isStrict && !isRelaxed)
                 continue;
 
             var docNum = l2.Substring(0, 9).Replace("<", "");
-            var nationality = l2.Substring(10, 3).Replace("<", "");
-            var dob = ParseMrzDate(l2.Substring(13, 6));
-            var expiry = ParseMrzDate(l2.Substring(21, 6));
+            var nationality = FixAlpha(l2.Substring(10, 3)).Replace("<", "");
+            var dob = ParseMrzDate(FixDigits(l2.Substring(13, 6)));
+            var expiry = ParseMrzDate(FixDigits(l2.Substring(21, 6)));
             var name = ParseNameField(l1.Length > 5 ? l1.Substring(5) : "");
 
             if (string.IsNullOrEmpty(name))
@@ -66,24 +96,45 @@ public static class MrzParser
 
     private static MrzResult? TryParseTd1(List<string> lines)
     {
-        var line2Regex = new Regex(@"^\d{6}\d[MFX<]\d{6}\d[A-Z<]{3}");
+        // Strict: digits where digits are expected, [MFX<] for sex, letters for nationality.
+        var strictPattern = new Regex(@"^\d{6}\d[MFX<]\d{6}\d[A-Z<]{3}");
+        // Relaxed: tolerate any alphanumeric in digit AND nationality slots, since OCR
+        // commonly swaps 0/O, 1/I/L, 5/S, 8/B, 2/Z in both directions.
+        var relaxedPattern = new Regex(@"^[A-Z0-9]{6}[A-Z0-9][MFX<][A-Z0-9]{6}[A-Z0-9][A-Z0-9<]{3}");
 
         for (int i = 0; i < lines.Count; i++)
         {
             var candidate = NormalizeMrzLine(lines[i]);
-            if (!line2Regex.IsMatch(candidate)) continue;
+            if (candidate.Length < 18) continue;
 
-            var dob = ParseMrzDate(candidate.Substring(0, 6));
-            var expiry = ParseMrzDate(candidate.Substring(7, 6));
-            var nationality = candidate.Length >= 17 ? candidate.Substring(14, 3).Replace("<", "") : "";
+            bool isStrict = strictPattern.IsMatch(candidate);
+            bool isRelaxed = !isStrict && relaxedPattern.IsMatch(candidate);
 
-            var nameLine = lines.FirstOrDefault(l => l.Contains("<<"));
-            var fullName = nameLine != null ? ParseNameField(NormalizeMrzLine(nameLine)) : "";
+            if (!isStrict && !isRelaxed) continue;
+
+            // TD1 line 2 layout: DOB(6) + checkdigit(1) + sex(1) + expiry(6) + checkdigit(1) + nationality(3) + ...
+            // i.e. positions 0-5 DOB, 6 checkdigit, 7 sex, 8-13 expiry, 14 checkdigit, 15-17 nationality.
+            var dob = ParseMrzDate(FixDigits(candidate.Substring(0, 6)));
+            var expiry = candidate.Length >= 14
+                ? ParseMrzDate(FixDigits(candidate.Substring(8, 6)))
+                : "";
+            var nationality = candidate.Length >= 18
+                ? FixAlpha(candidate.Substring(15, 3)).Replace("<", "")
+                : "";
+
+            // Name line must contain "<<" AND consist only of letters/< — this avoids
+            // false-matching the DOB/expiry/nationality line, which can contain "<<"
+            // as incidental filler padding (e.g. "...J0R<<LKLK...").
+            var nameLine = lines
+                .Select(NormalizeMrzLine)
+                .FirstOrDefault(l => l.Contains("<<") && Regex.IsMatch(l, @"^[A-Z<]+$"));
+            var fullName = nameLine != null ? ParseNameField(nameLine) : "";
 
             var docNumLine = lines.FirstOrDefault(l => Regex.IsMatch(l.Trim(), @"^\d{7,10}$"));
             var docNumber = docNumLine?.Trim() ?? "";
 
-            if (string.IsNullOrEmpty(fullName) && string.IsNullOrEmpty(docNumber))
+            if (string.IsNullOrEmpty(fullName) && string.IsNullOrEmpty(docNumber)
+                && string.IsNullOrEmpty(dob) && string.IsNullOrEmpty(nationality))
                 continue;
 
             return new MrzResult
@@ -101,6 +152,22 @@ public static class MrzParser
 
     private static string NormalizeMrzLine(string line) =>
         line.Trim().Replace(" ", "").ToUpperInvariant();
+
+    // Converts digit-confused characters back to digits, for fields that should be numeric
+    // (dates, check digits). E.g. "O" -> "0", "I"/"L" -> "1", "S" -> "5", "B" -> "8", "Z" -> "2".
+    private static string FixDigits(string s)
+    {
+        var chars = s.Select(c => LetterLooksLikeDigit.TryGetValue(c, out var d) ? d : c);
+        return new string(chars.ToArray());
+    }
+
+    // Converts letter-confused characters back to letters, for fields that should be alphabetic
+    // (nationality code). E.g. "0" -> "O", "1" -> "I", "5" -> "S", "8" -> "B", "2" -> "Z".
+    private static string FixAlpha(string s)
+    {
+        var chars = s.Select(c => DigitLooksLikeLetter.TryGetValue(c, out var l) ? l : c);
+        return new string(chars.ToArray());
+    }
 
     private static string ParseNameField(string nameField)
     {

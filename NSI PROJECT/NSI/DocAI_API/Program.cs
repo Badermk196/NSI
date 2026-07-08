@@ -2,6 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services for controllers
 builder.Services.AddControllers();
+builder.Services.AddScoped<DocAI_API.Services.DatabaseService>();
 
 // Add CORS to allow frontend to call this API
 builder.Services.AddCors(options =>

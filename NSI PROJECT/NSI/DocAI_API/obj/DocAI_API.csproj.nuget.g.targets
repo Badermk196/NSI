@@ -4,6 +4,7 @@
     <Import Project="$(NuGetPackageRoot)tesseract\5.2.0\build\Tesseract.targets" Condition="Exists('$(NuGetPackageRoot)tesseract\5.2.0\build\Tesseract.targets')" />
     <Import Project="$(NuGetPackageRoot)system.clientmodel\1.10.0\buildTransitive\net10.0\System.ClientModel.targets" Condition="Exists('$(NuGetPackageRoot)system.clientmodel\1.10.0\buildTransitive\net10.0\System.ClientModel.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.extensions.apidescription.server\10.0.0\build\Microsoft.Extensions.ApiDescription.Server.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.apidescription.server\10.0.0\build\Microsoft.Extensions.ApiDescription.Server.targets')" />
+    <Import Project="$(NuGetPackageRoot)skiasharp.nativeassets.webassembly\2.88.8\buildTransitive\netstandard1.0\SkiaSharp.NativeAssets.WebAssembly.targets" Condition="Exists('$(NuGetPackageRoot)skiasharp.nativeassets.webassembly\2.88.8\buildTransitive\netstandard1.0\SkiaSharp.NativeAssets.WebAssembly.targets')" />
     <Import Project="$(NuGetPackageRoot)openai\2.11.0\buildTransitive\netstandard2.0\OpenAI.targets" Condition="Exists('$(NuGetPackageRoot)openai\2.11.0\buildTransitive\netstandard2.0\OpenAI.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.aspnetcore.openapi\10.0.8\build\Microsoft.AspNetCore.OpenApi.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.aspnetcore.openapi\10.0.8\build\Microsoft.AspNetCore.OpenApi.targets')" />
   </ImportGroup>

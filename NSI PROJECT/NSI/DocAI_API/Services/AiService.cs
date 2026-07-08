@@ -26,7 +26,6 @@ public class AiService
 
     public async Task<string> ExtractInvoiceData(string fileText, string docType = "Invoice")
     {
-        // ─── OLLAMA READS THE CONTENT DIRECTLY ───
         var aiData = await CallOllama(fileText, docType);
 
         var fields = DocTypeFields.TryGetValue(docType, out var f) ? f : Array.Empty<string>();
@@ -44,18 +43,75 @@ public class AiService
             }
         }
 
+        // ─── MRZ FALLBACK/OVERRIDE for ID-like documents ───
+        // The AI model struggles with MRZ-encoded fields (dateOfBirth, nationality,
+        // expiryDate) because they're positional codes, not labeled text. The MRZ
+        // parser handles these deterministically and more accurately when an MRZ
+        // block is present in the OCR'd text, so we prefer it for those fields.
+        if (docType == "NationalID" || docType == "Passport")
+        {
+            var mrz = MrzParser.TryParse(fileText);
+            if (mrz != null)
+            {
+                Console.WriteLine("🪪 MRZ block detected — merging MRZ-parsed fields into result.");
+                Console.WriteLine($"🪪 MRZ: dob={mrz.DateOfBirth}, expiry={mrz.ExpiryDate}, nationality={mrz.Nationality}, name={mrz.FullName}");
+
+                if (!string.IsNullOrWhiteSpace(mrz.DateOfBirth) && result.ContainsKey("dateOfBirth"))
+                    result["dateOfBirth"] = mrz.DateOfBirth;
+
+                if (!string.IsNullOrWhiteSpace(mrz.ExpiryDate) && result.ContainsKey("expiryDate"))
+                    result["expiryDate"] = mrz.ExpiryDate;
+
+                if (!string.IsNullOrWhiteSpace(mrz.Nationality) && result.ContainsKey("nationality"))
+                    result["nationality"] = mrz.Nationality;
+
+                // Prefer MRZ's cleanly-parsed name over the AI's name only if the AI's
+                // value is empty or looks like a raw, unparsed MRZ fragment (contains "<").
+                if (!string.IsNullOrWhiteSpace(mrz.FullName) && result.ContainsKey("fullName"))
+                {
+                    var aiName = result["fullName"]?.ToString() ?? "";
+                    if (string.IsNullOrWhiteSpace(aiName) || aiName.Contains('<'))
+                    {
+                        result["fullName"] = mrz.FullName;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("🪪 No MRZ block detected in this document's text.");
+            }
+        }
+
         return JsonSerializer.Serialize(result);
     }
 
     private async Task<Dictionary<string, object>> CallOllama(string fileText, string docType)
     {
+        Console.WriteLine("========================================");
+        Console.WriteLine("🤖 SENDING TO OLLAMA:");
+        Console.WriteLine($"📄 Document Type: {docType}");
+        Console.WriteLine($"📄 Text length: {fileText.Length} characters");
+        Console.WriteLine("========================================");
+        Console.WriteLine("📄 FULL TEXT SENT TO OLLAMA:");
+        Console.WriteLine("========================================");
+        Console.WriteLine(fileText);
+        Console.WriteLine("========================================");
+
         string prompt = BuildPrompt(docType, fileText);
+
+        // Log the EXACT prompt being sent so we can visually verify the JSON template
+        // inside it is not corrupted before it ever reaches Ollama.
+        Console.WriteLine("📝 FULL PROMPT SENT TO OLLAMA:");
+        Console.WriteLine("========================================");
+        Console.WriteLine(prompt);
+        Console.WriteLine("========================================");
 
         var requestBody = new
         {
             model = _modelName,
             prompt = prompt,
             stream = false,
+            format = "json", // Forces Ollama's grammar-constrained decoding to emit valid JSON
             options = new { temperature = 0.1, top_p = 0.9 }
         };
 
@@ -65,25 +121,58 @@ public class AiService
             "application/json"
         );
 
-        var response = await _httpClient.PostAsync("http://localhost:11434/api/generate", content);
-        var responseString = await response.Content.ReadAsStringAsync();
+        HttpResponseMessage response;
+        string responseString;
 
-        var jsonResponse = JsonSerializer.Deserialize<JsonElement>(responseString);
-        var extractedData = jsonResponse.GetProperty("response").GetString() ?? "{}";
+        try
+        {
+            response = await _httpClient.PostAsync("http://localhost:11434/api/generate", content);
+            responseString = await response.Content.ReadAsStringAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Failed to reach Ollama: {ex.Message}");
+            return new();
+        }
 
-        extractedData = CleanJsonResponse(extractedData);
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"❌ Ollama returned HTTP {(int)response.StatusCode}: {responseString}");
+            return new();
+        }
+
+        string extractedData;
+        try
+        {
+            var jsonResponse = JsonSerializer.Deserialize<JsonElement>(responseString);
+            extractedData = jsonResponse.GetProperty("response").GetString() ?? "{}";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Failed to parse Ollama envelope: {ex.Message}");
+            Console.WriteLine($"❌ Raw response string: {responseString}");
+            return new();
+        }
+
+        Console.WriteLine("📥 RAW OLLAMA RESPONSE:");
+        Console.WriteLine(extractedData);
+        Console.WriteLine("========================================");
+
+        extractedData = CleanJsonResponse(extractedData, docType);
 
         try
         {
             return JsonSerializer.Deserialize<Dictionary<string, object>>(extractedData) ?? new();
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"⚠️ JSON parse failed for {docType}: {ex.Message}");
+            Console.WriteLine($"⚠️ Raw cleaned response: {extractedData}");
             return new();
         }
     }
 
-    private string CleanJsonResponse(string response)
+    private string CleanJsonResponse(string response, string docType)
     {
         if (string.IsNullOrWhiteSpace(response))
             return "{}";
@@ -107,8 +196,10 @@ public class AiService
             var parsed = JsonSerializer.Deserialize<object>(response);
             return JsonSerializer.Serialize(parsed);
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"⚠️ JSON parse failed for {docType}: {ex.Message}");
+            Console.WriteLine($"⚠️ Raw cleaned response: {response}");
             var match = Regex.Match(response, @"\{[^{}]*\}");
             if (match.Success)
             {
@@ -147,6 +238,11 @@ public class AiService
     {
         string instructions = GetFieldsForDocType(docType);
         string jsonFields = GetJsonFieldsForDocType(docType);
+
+        Console.WriteLine("🧩 JSON TEMPLATE FOR PROMPT:");
+        Console.WriteLine(jsonFields);
+        Console.WriteLine("========================================");
+
         string fewShot = GetFewShotExample(docType);
 
         return $@"You are a strict document data extractor. You ONLY output valid JSON, nothing else.
@@ -178,37 +274,37 @@ Output JSON (and ONLY this JSON, filled in with real values from the text above)
     {
         return docType switch
         {
-            "Invoice" => @"1. INVOICE NUMBER: Look for 'INVOICE #', 'Invoice Number', 'INV-'.
-2. DATE: Look for 'Date:', 'Invoice Date:'.
-3. DUE DATE: Look for 'Due Date:', 'Payment Due:'.
-4. VENDOR NAME: Look for 'Vendor:', 'Supplier:', 'Company:', 'From:'.
-5. EMAIL: Look for email address (xxx@xxx.xxx).
-6. AMOUNT: Look for 'Total:', 'Grand Total:', 'Amount Due:'.",
+            "Invoice" => @"1. INVOICE NUMBER: Look for labels like 'Invoice #', 'Invoice Number', 'INV-', 'Invoice No'.
+2. DATE: Look for labels like 'Date', 'Invoice Date', 'Issue Date'.
+3. DUE DATE: Look for labels like 'Due Date', 'Payment Due', 'Due On'.
+4. VENDOR NAME: Look for labels like 'Vendor', 'Supplier', 'From', 'Company', 'Seller'.
+5. EMAIL: Look for email address pattern (xxx@xxx.xxx).
+6. AMOUNT: Look for labels like 'Total', 'Grand Total', 'Amount Due', 'Balance Due'.",
 
-            "NationalID" => @"1. ID NUMBER: Look for 'ID NUMBER:', 'ID No', 'National ID', or a long number.
-2. FULL NAME: Look for 'ENGLISH NAME:', 'NAME:', 'Full Name:', or names.
-3. DATE OF BIRTH: Look for 'DATE OF BIRTH:', 'DOB:', 'BIRTH DATE:', or 'Issue Date'.
-4. NATIONALITY: Look for 'NATIONALITY:', 'Country:'.
-5. EXPIRY DATE: Look for 'EXPIRE DATE:', 'EXPIRY DATE:', 'Expiry:.",
+            "NationalID" => @"1. ID NUMBER: Look for labels like 'ID Number', 'ID No', 'National ID', 'رقم الهوية', 'ID:'.
+2. FULL NAME: Look for labels like 'Name', 'Full Name', 'Holder Name', 'الاسم', 'ENGLISH NAME'.
+3. DATE OF BIRTH: Look for labels like 'DOB', 'Date of Birth', 'تاريخ الميلاد', 'Birth Date'.
+4. NATIONALITY: Look for labels like 'Nationality', 'الجنسية', 'Country'.
+5. EXPIRY DATE: Look for labels like 'Expiry', 'Expiry Date', 'تاريخ الانتهاء', 'Valid Until'.",
 
-            "Passport" => @"1. PASSPORT NUMBER: Look for 'Passport No', 'Passport Number'.
-2. FULL NAME: Look for 'Name:', 'Full Name:'.
-3. DATE OF BIRTH: Look for 'DOB:', 'Date of Birth:'.
-4. NATIONALITY: Look for 'Nationality:'.
-5. EXPIRY DATE: Look for 'Expiry Date:', 'Date of Expiry:.",
+            "Passport" => @"1. PASSPORT NUMBER: Look for labels like 'Passport No', 'Passport Number', 'رقم جواز السفر'.
+2. FULL NAME: Look for labels like 'Name', 'Full Name', 'Holder Name', 'الاسم'.
+3. DATE OF BIRTH: Look for labels like 'DOB', 'Date of Birth', 'تاريخ الميلاد'.
+4. NATIONALITY: Look for labels like 'Nationality', 'الجنسية'.
+5. EXPIRY DATE: Look for labels like 'Expiry Date', 'Date of Expiry', 'تاريخ الانتهاء'.",
 
-            "EmployeeRecord" => @"1. EMPLOYEE ID: Look for 'Employee ID', 'EMP', 'Staff ID'.
-2. FULL NAME: Look for 'Name:', 'Employee Name:'.
-3. DEPARTMENT: Look for 'Department:', 'Dept:', 'Division:'.
-4. POSITION: Look for 'Position:', 'Job Title:', 'Role:'.
-5. EMAIL: Look for email address.
-6. PHONE: Look for phone number.",
+            "EmployeeRecord" => @"1. EMPLOYEE ID: Look for labels like 'Employee ID', 'EMP', 'Staff ID', 'رقم الموظف'.
+2. FULL NAME: Look for labels like 'Name', 'Employee Name', 'الاسم'.
+3. DEPARTMENT: Look for labels like 'Department', 'Dept', 'Division', 'القسم'.
+4. POSITION: Look for labels like 'Position', 'Job Title', 'Role', 'المسمى الوظيفي'.
+5. EMAIL: Look for email address pattern.
+6. PHONE: Look for phone number pattern.",
 
-            "Receipt" => @"1. RECEIPT NUMBER: Look for 'Receipt Number', 'رقم الإيصال', 'Transaction ID'.
-2. DATE: Look for 'Receipt Date', 'تاريخ الإيصال', 'Date:'.
-3. VENDOR NAME: The organization/entity name, usually at the top of the receipt.
-4. AMOUNT: Look for 'Total Amount', 'المجموع الإجمالي', 'Grand Total'.
-5. PAYMENT METHOD: Look for 'Payment Method', 'طريقة الدفع', 'Paid by'.",
+            "Receipt" => @"1. RECEIPT NUMBER: Look for labels like 'Receipt #', 'Receipt Number', 'رقم الإيصال', 'Transaction ID'.
+2. DATE: Look for labels like 'Receipt Date', 'Date', 'تاريخ الإيصال', 'Transaction Date'.
+3. VENDOR NAME: Look for the organization/entity name at the top of the receipt.
+4. AMOUNT: Look for labels like 'Total', 'Total Amount', 'Grand Total', 'المجموع الإجمالي'.
+5. PAYMENT METHOD: Look for labels like 'Payment Method', 'طريقة الدفع', 'Paid by', 'Cash', 'Card'.",
 
             _ => @"1. DOCUMENT NUMBER
 2. DATE
@@ -252,6 +348,42 @@ Expected JSON:
   ""dateOfBirth"": """",
   ""nationality"": ""JORDAN"",
   ""expiryDate"": ""3/29/2027""
+}",
+
+            "Passport" => @"Example:
+Text:
+""PASSPORT NO: P1234567
+NAME: JOHN MICHAEL SMITH
+DATE OF BIRTH: 12/05/1990
+NATIONALITY: BRITISH
+DATE OF EXPIRY: 11/05/2030""
+
+Expected JSON:
+{
+  ""passportNumber"": ""P1234567"",
+  ""fullName"": ""JOHN MICHAEL SMITH"",
+  ""dateOfBirth"": ""12/05/1990"",
+  ""nationality"": ""BRITISH"",
+  ""expiryDate"": ""11/05/2030""
+}",
+
+            "EmployeeRecord" => @"Example:
+Text:
+""EMPLOYEE ID: EMP-00231
+NAME: SARA AHMED KHALIL
+DEPARTMENT: FINANCE
+POSITION: SENIOR ACCOUNTANT
+EMAIL: sara.khalil@company.com
+PHONE: +971-50-1234567""
+
+Expected JSON:
+{
+  ""employeeId"": ""EMP-00231"",
+  ""fullName"": ""SARA AHMED KHALIL"",
+  ""department"": ""FINANCE"",
+  ""position"": ""SENIOR ACCOUNTANT"",
+  ""email"": ""sara.khalil@company.com"",
+  ""phone"": ""+971-50-1234567""
 }",
 
             _ => ""

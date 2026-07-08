@@ -439,7 +439,7 @@
         <!-- ─── HEADER ─── -->
         <div class="header-bar">
             <div class="logo">
-                <img src="FINAL.LOGO.avif" alt="NvSoft" />
+                <img src="FINAL.LOGO.avif" alt="NVSSoft" />
             </div>
             <h1>Upload Document</h1>
             <p>Upload your document and let AI extract the data for you</p>
@@ -632,7 +632,7 @@
                     });
 
                     const data = await response.json();
-
+                    
                     if (!response.ok) {
                         throw new Error(data.error || 'Upload failed');
                     }
@@ -642,6 +642,10 @@
                     sessionStorage.setItem('extractedData', JSON.stringify(data));
                     sessionStorage.setItem('fileName', selectedFile.name);
                     sessionStorage.setItem('docType', docType);
+
+                    sessionStorage.setItem('savedFileName', data.savedFileName || selectedFile.name);
+                    sessionStorage.setItem('savedFilePath', data.savedFilePath || '');
+                    sessionStorage.setItem('extractedText', data.extractedText || '');
 
                     setTimeout(() => {
                         window.location.href = 'index.html';

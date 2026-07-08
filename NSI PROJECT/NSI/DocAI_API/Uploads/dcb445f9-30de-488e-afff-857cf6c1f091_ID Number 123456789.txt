@@ -1,0 +1,6 @@
+INVOICE #: INV-2026-001
+Date: 2026-06-30
+Due Date: 2026-07-30
+Vendor: TechSolutions LLC
+Email: billing@techsolutions.com
+Amount: 1250.00

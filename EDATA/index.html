@@ -718,7 +718,7 @@
             <div class="header-bar">
                 <div class="header-left">
                     <div class="logo">
-                        <img src="c:\Users\Bader\OneDrive\Desktop\FINAL.LOGO.avif" alt="NVSSoft" />
+                        <img src="FINAL.LOGO.avif" alt="NVSSoft" />
                     </div>
                     <div class="logo-divider"></div>
                     <div class="header-title">
@@ -866,9 +866,12 @@
 
             let isEditing = false;
             const API_BASE = 'http://localhost:5018';
-            let currentDocType = 'Invoice';
-            let dynamicInputs = [];
-            let docId = 'DOC-2026-001';
+                let currentDocType = 'Invoice';
+                let dynamicInputs = [];
+                let docId = 'DOC-2026-001';
+
+                let savedFileName = '';
+                let extractedText = '';
 
             // ── Generate Dynamic Fields ──
             function generateFields(docType) {
@@ -913,9 +916,12 @@
 
             // ── Load Data from Session Storage ──
             function loadDataFromSession() {
-                const storedDocType = sessionStorage.getItem('docType');
-                const storedFileName = sessionStorage.getItem('fileName');
-                const storedData = sessionStorage.getItem('extractedData');
+            const storedDocType = sessionStorage.getItem('docType');
+            const storedFileName = sessionStorage.getItem('fileName');
+            const storedData = sessionStorage.getItem('extractedData');
+
+            savedFileName = sessionStorage.getItem('savedFileName') || '';
+            extractedText = sessionStorage.getItem('extractedText') || '';
 
                 if (storedDocType) {
                     generateFields(storedDocType);
@@ -1021,9 +1027,12 @@
                     docId: docIdInput.value,
                     docType: currentDocType,
                     fileName: fileNameDisplay.value,
-                    ...data
+                    savedFileName: savedFileName || fileNameDisplay.value,
+                    savedFilePath: sessionStorage.getItem('savedFilePath') || '',
+                    extractedText: extractedText || sessionStorage.getItem('extractedText') || '',
+                    attachPath: savedFileName || fileNameDisplay.value,
+                    extractedData: data
                 };
-
                 saveBtn.disabled = true;
                 saveBtn.innerHTML = '<span class="spinner"></span> Saving…';
                 setStatus('Saving…', 'saving');
