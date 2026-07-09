@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NVSSoft - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* ─── RESET & BASE ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f0f2f5;
+            color: #1e293b;
+            display: flex;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ─── LAYOUT ─── */
+        .app {
+            display: flex;
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            gap: 24px;
+        }
+
+        /* ─── SIDEBAR ─── */
+        .sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 24px 18px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+            height: fit-content;
+        }
+
+        /* ─── NVSSoft Logo ─── */
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            margin-bottom: 28px;
+        }
+        .logo-text {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+        .logo-n {
+            color: #1e293b;
+        }
+        .logo-vs {
+            color: #3b82f6;
+        }
+        .logo-soft {
+            color: #1e293b;
+        }
+        .logo-tagline {
+            font-size: 10px;
+            font-weight: 500;
+            color: #94a3b8;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            padding-left: 2px;
+        }
+
+        .sidebar .badge {
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            margin: 20px 0 10px 4px;
+        }
+        .sidebar .doc-list {
+            list-style: none;
+        }
+        .sidebar .doc-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #334155;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 2px;
+        }
+        .sidebar .doc-list li:hover {
+            background: #f1f5f9;
+        }
+        .sidebar .doc-list li.active {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+        .sidebar .doc-list li .count {
+            background: #e2e8f0;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0 10px;
+            border-radius: 20px;
+            color: #475569;
+        }
+        .sidebar .doc-list li.active .count {
+            background: #bfdbfe;
+            color: #1d4ed8;
+        }
+        .sidebar .search-box {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            margin: 12px 0 6px;
+            background: #f8fafc;
+            outline: none;
+            transition: 0.2s;
+        }
+        .sidebar .search-box:focus {
+            border-color: #3b82f6;
+            background: #fff;
+        }
+        .btn-add {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-add:hover {
+            background: #2563eb;
+        }
+
+        /* ─── MAIN CONTENT ─── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ─── TOP BAR ─── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .topbar h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .topbar h1 small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #64748b;
+            display: block;
+            margin-top: 2px;
+        }
+        .topbar .actions {
+            display: flex;
+            gap: 12px;
+        }
+        .topbar .actions button {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #e2e8f0 !important;
+            color: #475569;
+        }
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+        .btn-primary {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        /* ─── CARDS ─── */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .card-header .sub {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 400;
+        }
+        .card-header .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .card-header .actions button {
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-sm-primary {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .btn-sm-primary:hover {
+            background: #2563eb;
+        }
+        .btn-sm-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .btn-sm-danger:hover {
+            background: #fecaca;
+        }
+        .btn-sm-outline {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+        }
+        .btn-sm-outline:hover {
+            background: #f1f5f9;
+        }
+
+        /* ─── TABLE ─── */
+        .table-wrap {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+        }
+        table td .req {
+            color: #22c55e;
+            font-weight: 600;
+        }
+        .badge-db {
+            background: #e2e8f0;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* ─── CONFIG GRID ─── */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 4px;
+        }
+        .config-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px 18px;
+            border: 1px solid #eef2f6;
+        }
+        .config-item .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .config-item .value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #0f172a;
+            margin-top: 4px;
+            word-break: break-all;
+        }
+        .config-item .value small {
+            font-weight: 400;
+            color: #64748b;
+            font-size: 13px;
+        }
+        .config-item .actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .config-item .actions button {
+            padding: 6px 16px;
+            border-radius: 6px;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-test {
+            background: #e2e8f0;
+            color: #334155;
+        }
+        .btn-test:hover {
+            background: #cbd5e1;
+        }
+        .btn-save {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .btn-save:hover {
+            background: #2563eb;
+        }
+
+        /* ─── PROMPT SECTION ─── */
+        .prompt-section {
+            margin-top: 20px;
+            border-top: 1px solid #eef2f6;
+            padding-top: 20px;
+        }
+        .prompt-section .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .prompt-section .prompt-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .prompt-section .prompt-header .sub {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 400;
+        }
+        .prompt-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .prompt-table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .prompt-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+        .prompt-table .prompt-template {
+            max-width: 260px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #f8fafc;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            max-width: 200px;
+        }
+        .prompt-status {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .prompt-status.active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .prompt-status.inactive {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .prompt-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            transition: 0.2s;
+            color: #64748b;
+        }
+        .prompt-actions button:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .prompt-actions .delete-btn:hover {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+
+        /* ─── ADD PROMPT FORM ─── */
+        .add-prompt-form {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-top: 14px;
+            border: 1px solid #eef2f6;
+            display: none;
+        }
+        .add-prompt-form.open {
+            display: block;
+        }
+        .add-prompt-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 16px;
+            align-items: end;
+        }
+        .add-prompt-form .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .add-prompt-form .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .add-prompt-form .form-group input,
+        .add-prompt-form .form-group textarea,
+        .add-prompt-form .form-group select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            outline: none;
+            transition: 0.2s;
+            width: 100%;
+        }
+        .add-prompt-form .form-group input:focus,
+        .add-prompt-form .form-group textarea:focus,
+        .add-prompt-form .form-group select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .add-prompt-form .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .add-prompt-form .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            justify-content: flex-end;
+        }
+        .add-prompt-form .form-actions button {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        .btn-cancel:hover {
+            background: #cbd5e1;
+        }
+        .btn-submit {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .btn-submit:hover {
+            background: #2563eb;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 1024px) {
+            .app {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            .add-prompt-form .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            table {
+                font-size: 12px;
+            }
+            table th,
+            table td {
+                padding: 6px 8px;
+            }
+        }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #0f172a;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.3s ease;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success {
+            background: #15803d;
+        }
+        .toast.error {
+            background: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── TOAST ─── -->
+    <div id="toast" class="toast"></div>
+
+    <div class="app">
+
+        <!-- ─── SIDEBAR ─── -->
+        <aside class="sidebar">
+            <!-- NVSSoft Logo -->
+            <div class="logo">
+                <div class="logo-text">
+                    <span class="logo-n">N</span><span class="logo-vs">VS</span><span class="logo-soft">Soft</span>
+                </div>
+                <div class="logo-tagline">Your Information Management Partner</div>
+            </div>
+
+            <div class="badge">📄 Document Type Mapper</div>
+            <div style="font-size:13px; color:#64748b; margin-bottom:6px; font-weight:500;">5 templates configured</div>
+            <input class="search-box" placeholder="Search document types..." />
+            <ul class="doc-list">
+                <li class="active">National ID Card <span class="count">5</span></li>
+                <li>Invoice <span class="count">4</span></li>
+                <li>Passport <span class="count">3</span></li>
+                <li>Employee Record <span class="count">3</span></li>
+                <li>Receipt <span class="count">3</span></li>
+            </ul>
+            <button class="btn-add">+ Add New</button>
+        </aside>
+
+        <!-- ─── MAIN ─── -->
+        <main class="main">
+
+            <!-- TOPBAR -->
+            <div class="topbar">
+                <div>
+                    <h1>Admin Dashboard <small>Manage database, document templates, and AI extraction</small></h1>
+                </div>
+                <div class="actions">
+                    <button class="btn-outline">📊 Activity Log</button>
+                    <button class="btn-primary">⚡ Update All</button>
+                </div>
+            </div>
+
+            <!-- ─── DOCUMENT CONFIG CARD ─── -->
+            <section class="card">
+                <div class="card-header">
+                    <div>
+                        <h2>National ID Card <span style="font-weight:400;font-size:14px;color:#64748b;margin-left:8px;">Configure fields and database mapping</span></h2>
+                        <div style="font-size:14px;color:#64748b;margin-top:4px;">
+                            <strong>Name:</strong> National ID Card &nbsp;·&nbsp;
+                            <strong>Description:</strong> Government-issued national ID &nbsp;·&nbsp;
+                            <strong>Map to DB:</strong> <span class="badge-db">Invoices</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-sm-outline">+ Add Field</button>
+                        <button class="btn-sm-danger">🗑 Delete Document Type</button>
+                        <button class="btn-sm-primary">💾 Save</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Document Field</th>
+                                <th>Data Type</th>
+                                <th>Required</th>
+                                <th>Database Field</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>id_number</td><td>Text</td><td><span class="req">☑</span></td><td>invoice_id</td></tr>
+                            <tr><td>full_name</td><td>Text</td><td><span class="req">☑</span></td><td>vendor_name</td></tr>
+                            <tr><td>date_of_birth</td><td>Date</td><td><span class="req">☑</span></td><td>issue_date</td></tr>
+                            <tr><td>nationality</td><td>Text</td><td><span class="req">☑</span></td><td>notes</td></tr>
+                            <tr><td>expiry_date</td><td>Date</td><td><span class="req">☑</span></td><td>issue_date</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ─── SYSTEM CONFIG ─── -->
+            <section class="card">
+                <div class="card-header">
+                    <div>
+                        <h2>System Configuration</h2>
+                        <div class="sub">Manage database connections, document templates, AI extraction, and review activity.</div>
+                    </div>
+                </div>
+
+                <div class="config-grid">
+
+                    <!-- Database -->
+                    <div class="config-item">
+                        <div class="label">🔗 Database Connection Settings</div>
+                        <div style="font-size:13px;color:#64748b;margin:6px 0 10px;">Primary PostgreSQL data store</div>
+                        <div style="margin-bottom:6px;"><span class="label">Server Address</span><div class="value">db.docuai.internal</div></div>
+                        <div style="margin-bottom:6px;"><span class="label">Port</span><div class="value">5432</div></div>
+                        <div><span class="label">Username</span><div class="value">admin_svc</div></div>
+                        <div class="actions">
+                            <button class="btn-test" onclick="showToast('✅ Database connection test successful!', 'success')">🔌 Test Connection</button>
+                            <button class="btn-save" onclick="showToast('💾 Database settings saved!', 'success')">Save Settings</button>
+                        </div>
+                    </div>
+
+                    <!-- AI Model -->
+                    <div class="config-item">
+                        <div class="label">🤖 AI Model Configuration</div>
+                        <div style="font-size:13px;color:#22c55e;margin:6px 0 10px;">● Connected to remote extraction service</div>
+                        <div style="margin-bottom:6px;"><span class="label">API Endpoint URL</span><div class="value" style="font-size:13px;">https://api.ai-provider.com/v1/extract</div></div>
+                        <div><span class="label">Authentication Method</span><div class="value">API Key <small>• • • • • • • • • • • •</small></div></div>
+                        <div class="actions">
+                            <button class="btn-test" onclick="showToast('✅ AI model connection test successful!', 'success')">🔌 Test Connection</button>
+                            <button class="btn-save" onclick="showToast('💾 AI settings saved!', 'success')">Save AI Settings</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ─── PROMPT SECTION ─── -->
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <div>
+                            <h3>📝 AI Prompt Manager</h3>
+                            <div class="sub">Configure extraction prompts for each document type. Prompts are stored in the database.</div>
+                        </div>
+                        <div>
+                            <button class="btn-sm-primary" id="togglePromptForm" onclick="togglePromptForm()">+ Add New Prompt</button>
+                        </div>
+                    </div>
+
+                    <!-- Prompts Table -->
+                    <div class="table-wrap">
+                        <table class="prompt-table">
+                            <thead>
+                                <tr>
+                                    <th>Prompt Name</th>
+                                    <th>Document Type</th>
+                                    <th>Template</th>
+                                    <th>Status</th>
+                                    <th style="text-align:center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="promptTableBody">
+                                <!-- Rows inserted by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Add Prompt Form -->
+                    <div class="add-prompt-form" id="addPromptForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Prompt Name</label>
+                                <input type="text" id="promptName" placeholder="e.g. Invoice Extractor v2" />
+                            </div>
+                            <div class="form-group">
+                                <label>Document Type</label>
+                                <select id="promptDocType">
+                                    <option value="National ID Card">National ID Card</option>
+                                    <option value="Invoice">Invoice</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="Employee Record">Employee Record</option>
+                                    <option value="Receipt">Receipt</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-top:12px;">
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>Prompt Template</label>
+                                <textarea id="promptTemplate" placeholder="Extract the following fields: invoice_number, date, vendor_name, total_amount. Return as JSON."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-cancel" onclick="togglePromptForm()">Cancel</button>
+                            <button class="btn-submit" onclick="savePrompt()">💾 Save Prompt</button>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- ─── END PROMPT SECTION ─── -->
+
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // ─── PROMPT DATA (Simulates Database) ───
+        let prompts = [
+            { id: 1, name: 'Invoice Extractor v1', docType: 'Invoice', template: 'Extract invoice_number, date, vendor_name, total_amount. Return JSON.', status: 'active' },
+            { id: 2, name: 'Passport Parser', docType: 'Passport', template: 'Extract full_name, passport_number, nationality, date_of_birth, expiry_date. Return JSON.', status: 'active' },
+            { id: 3, name: 'National ID Mapper', docType: 'National ID Card', template: 'Extract id_number, full_name, date_of_birth, nationality, expiry_date. Return JSON.', status: 'active' },
+            { id: 4, name: 'Receipt Scanner', docType: 'Receipt', template: 'Extract store_name, date, total_amount, items. Return JSON array.', status: 'inactive' },
+        ];
+        let nextId = 5;
+
+        // ─── RENDER PROMPTS ───
+        function renderPrompts() {
+            const tbody = document.getElementById('promptTableBody');
+            if (!tbody) return;
+            if (prompts.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:24px;">No prompts configured yet. Click "Add New Prompt" to get started.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = prompts.map(p => `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td><span class="badge-db">${p.docType}</span></td>
+                        <td><span class="prompt-template">${p.template}</span></td>
+                        <td><span class="prompt-status ${p.status}">${p.status === 'active' ? '● Active' : '○ Inactive'}</span></td>
+                        <td class="prompt-actions" style="text-align:center;">
+                            <button onclick="togglePromptStatus(${p.id})" title="Toggle Status">🔄</button>
+                            <button onclick="editPrompt(${p.id})" title="Edit">✏️</button>
+                            <button class="delete-btn" onclick="deletePrompt(${p.id})" title="Delete">🗑</button>
+                        </td>
+                    </tr>
+                `).join('');
+        }
+
+        // ─── SAVE PROMPT ───
+        function savePrompt() {
+            const name = document.getElementById('promptName').value.trim();
+            const docType = document.getElementById('promptDocType').value;
+            const template = document.getElementById('promptTemplate').value.trim();
+
+            if (!name || !template) {
+                showToast('⚠️ Please fill in all fields.', 'error');
+                return;
+            }
+
+            prompts.push({
+                id: nextId++,
+                name: name,
+                docType: docType,
+                template: template,
+                status: 'active'
+            });
+
+            renderPrompts();
+            togglePromptForm();
+            document.getElementById('promptName').value = '';
+            document.getElementById('promptTemplate').value = '';
+            showToast('✅ Prompt saved to database successfully!', 'success');
+        }
+
+        // ─── DELETE PROMPT ───
+        function deletePrompt(id) {
+            if (!confirm('Delete this prompt?')) return;
+            prompts = prompts.filter(p => p.id !== id);
+            renderPrompts();
+            showToast('🗑 Prompt deleted from database.', 'success');
+        }
+
+        // ─── TOGGLE STATUS ───
+        function togglePromptStatus(id) {
+            const p = prompts.find(p => p.id === id);
+            if (!p) return;
+            p.status = p.status === 'active' ? 'inactive' : 'active';
+            renderPrompts();
+            showToast(`🔄 Prompt "${p.name}" is now ${p.status}.`, 'success');
+        }
+
+        // ─── EDIT PROMPT ───
+        function editPrompt(id) {
+            const p = prompts.find(p => p.id === id);
+            if (!p) return;
+            document.getElementById('promptName').value = p.name;
+            document.getElementById('promptDocType').value = p.docType;
+            document.getElementById('promptTemplate').value = p.template;
+            prompts = prompts.filter(pr => pr.id !== id);
+            renderPrompts();
+            togglePromptForm();
+            showToast(`✏️ Editing prompt "${p.name}". Update and save.`, 'success');
+        }
+
+        // ─── TOGGLE FORM ───
+        function togglePromptForm() {
+            const form = document.getElementById('addPromptForm');
+            form.classList.toggle('open');
+            if (!form.classList.contains('open')) {
+                document.getElementById('promptName').value = '';
+                document.getElementById('promptTemplate').value = '';
+            }
+        }
+
+        // ─── TOAST ───
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type || '');
+            setTimeout(() => toast.classList.add('show'), 10);
+            clearTimeout(toast._hide);
+            toast._hide = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ─── SIDEBAR CLICK ───
+        document.querySelectorAll('.doc-list li').forEach(li => {
+            li.addEventListener('click', function() {
+                document.querySelectorAll('.doc-list li').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                const name = this.textContent.trim().replace(/\d+$/, '').trim();
+                document.querySelector('.card-header h2').innerHTML =
+                    `${name} <span style="font-weight:400;font-size:14px;color:#64748b;margin-left:8px;">Configure fields and database mapping</span>`;
+                showToast(`📄 Switched to "${name}" document type.`, 'success');
+            });
+        });
+
+        // ─── INIT ───
+        renderPrompts();
+    </script>
+
+</body>
+</html>
