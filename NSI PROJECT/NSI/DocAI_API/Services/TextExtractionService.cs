@@ -1,6 +1,5 @@
 using System.Text;
 using UglyToad.PdfPig;
-using UglyToad.PdfPig.Content;
 using PDFtoImage;
 using SkiaSharp;
 using Tesseract;
@@ -9,13 +8,8 @@ namespace DocAI_API.Services;
 
 public class TextExtractionService
 {
-    // Minimum characters we require from PdfPig before we trust it's a "real" text PDF.
-    // Scanned PDFs sometimes contain a handful of stray characters (e.g. from a watermark)
-    // even with no real text layer, so we don't just check for == 0.
     private const int MinTextLengthThreshold = 20;
 
-    // Path to the folder containing tessdata language files (eng.traineddata, etc).
-    // This folder must be copied to the output/bin directory at build time.
     private static readonly string TessDataPath =
         Path.Combine(AppContext.BaseDirectory, "tessdata");
 
@@ -24,20 +18,17 @@ public class TextExtractionService
         var fileExtension = Path.GetExtension(file.FileName).ToLower();
 
         if (fileExtension == ".pdf")
-        {
             return await ExtractTextFromPdf(file);
-        }
-        else if (fileExtension == ".txt")
-        {
+
+        if (fileExtension == ".txt")
             return await ExtractTextFromTxt(file);
-        }
-        else
-        {
-            return "Unsupported file type. Please upload PDF or TXT files.";
-        }
+
+        if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
+            return await ExtractTextFromImage(file);
+
+        return "Unsupported file type. Please upload PDF, TXT, JPG, JPEG, or PNG files.";
     }
 
-    // ─── PDF EXTRACTION ───
     private async Task<string> ExtractTextFromPdf(IFormFile file)
     {
         var sb = new StringBuilder();
@@ -49,58 +40,60 @@ public class TextExtractionService
             pdfBytes = memoryStream.ToArray();
         }
 
-        // ─── METHOD 1: Try normal text-layer extraction with PdfPig ───
         try
         {
             using var ms = new MemoryStream(pdfBytes);
-            using var pdf = UglyToad.PdfPig.PdfDocument.Open(ms);
+            using var pdf = PdfDocument.Open(ms);
+
             Console.WriteLine($"📄 Number of pages: {pdf.GetPages().Count()}");
 
             foreach (var page in pdf.GetPages())
             {
                 var text = page.Text;
+
                 Console.WriteLine($"📄 Page {page.Number} text length: {text.Length}");
+
                 if (text.Length > 0)
-                {
                     Console.WriteLine($"📄 Page {page.Number} preview: {text.Substring(0, Math.Min(100, text.Length))}");
-                }
+
                 sb.Append(text);
+                sb.Append("\n");
             }
 
             var result = sb.ToString();
+
             if (!string.IsNullOrWhiteSpace(result) && result.Trim().Length >= MinTextLengthThreshold)
             {
-                Console.WriteLine($"✅ PdfPig extracted {result.Length} characters (text-based PDF)");
+                Console.WriteLine($"✅ PdfPig extracted {result.Length} characters");
                 return result;
             }
 
-            Console.WriteLine($"⚠️ PdfPig text layer too short ({result.Trim().Length} chars) — likely a scanned/image PDF. Falling back to OCR.");
+            Console.WriteLine("⚠️ PdfPig text too short. Falling back to OCR.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"⚠️ PdfPig failed: {ex.Message}");
         }
 
-        // ─── METHOD 2: OCR fallback for scanned/image-based PDFs ───
         try
         {
-            var ocrResult = await ExtractTextWithOcr(pdfBytes);
+            var ocrResult = await ExtractTextFromPdfWithOcr(pdfBytes);
+
             if (!string.IsNullOrWhiteSpace(ocrResult))
             {
-                Console.WriteLine($"✅ OCR extracted {ocrResult.Length} characters (image-based PDF)");
+                Console.WriteLine($"✅ OCR extracted {ocrResult.Length} characters from PDF");
                 return ocrResult;
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"⚠️ OCR fallback failed: {ex.Message}");
+            Console.WriteLine($"⚠️ PDF OCR fallback failed: {ex.Message}");
         }
 
-        return "No text could be extracted from this PDF. Please upload a clearer scan or a text-based PDF.";
+        return "No text could be extracted from this PDF.";
     }
 
-    // ─── OCR FALLBACK: Render each PDF page to an image, then run Tesseract OCR ───
-    private async Task<string> ExtractTextWithOcr(byte[] pdfBytes)
+    private async Task<string> ExtractTextFromPdfWithOcr(byte[] pdfBytes)
     {
         return await Task.Run(() =>
         {
@@ -109,22 +102,22 @@ public class TextExtractionService
             if (!Directory.Exists(TessDataPath))
             {
                 Console.WriteLine($"❌ tessdata folder not found at: {TessDataPath}");
-                Console.WriteLine("❌ Download eng.traineddata from https://github.com/tesseract-ocr/tessdata "
-                    + "and place it in a 'tessdata' folder next to your built .exe/.dll, "
-                    + "and ensure it's set to 'Copy to Output Directory' in your .csproj.");
                 return string.Empty;
             }
 
             using var engine = new TesseractEngine(TessDataPath, "eng", EngineMode.Default);
 
-            // PDFtoImage renders each page of the PDF to a bitmap at a given DPI.
-            // Higher DPI = better OCR accuracy but slower processing.
             var pageCount = Conversion.GetPageCount(pdfBytes);
-            Console.WriteLine($"🖼️ Rendering {pageCount} page(s) to images for OCR...");
+            Console.WriteLine($"🖼️ Rendering {pageCount} PDF page(s) to image for OCR...");
 
             for (int i = 0; i < pageCount; i++)
             {
-                using SKBitmap bitmap = Conversion.ToImage(pdfBytes, page: i, options: new RenderOptions(Dpi: 300));
+                using SKBitmap bitmap = Conversion.ToImage(
+                    pdfBytes,
+                    page: i,
+                    options: new RenderOptions(Dpi: 300)
+                );
+
                 using SKData encoded = bitmap.Encode(SKEncodedImageFormat.Png, 100);
                 using var pix = Pix.LoadFromMemory(encoded.ToArray());
                 using var ocrPage = engine.Process(pix);
@@ -132,7 +125,8 @@ public class TextExtractionService
                 var pageText = ocrPage.GetText();
                 var confidence = ocrPage.GetMeanConfidence();
 
-                Console.WriteLine($"🖼️ Page {i + 1} OCR confidence: {confidence:P0}, extracted {pageText.Length} characters");
+                Console.WriteLine($"🖼️ PDF page {i + 1} OCR confidence: {confidence:P0}, extracted {pageText.Length} characters");
+
                 sb.Append(pageText);
                 sb.Append("\n");
             }
@@ -141,7 +135,41 @@ public class TextExtractionService
         });
     }
 
-    // ─── TXT EXTRACTION ───
+    private async Task<string> ExtractTextFromImage(IFormFile file)
+    {
+        return await Task.Run(async () =>
+        {
+            if (!Directory.Exists(TessDataPath))
+            {
+                Console.WriteLine($"❌ tessdata folder not found at: {TessDataPath}");
+                return string.Empty;
+            }
+
+            byte[] imageBytes;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                imageBytes = memoryStream.ToArray();
+            }
+
+            using var engine = new TesseractEngine(TessDataPath, "eng", EngineMode.Default);
+            using var pix = Pix.LoadFromMemory(imageBytes);
+            using var page = engine.Process(pix);
+
+            var text = page.GetText();
+            var confidence = page.GetMeanConfidence();
+
+            Console.WriteLine($"🖼️ Image OCR confidence: {confidence:P0}");
+            Console.WriteLine($"🖼️ Image OCR extracted {text.Length} characters");
+
+            if (!string.IsNullOrWhiteSpace(text))
+                Console.WriteLine($"🖼️ Image OCR preview: {text.Substring(0, Math.Min(200, text.Length))}");
+
+            return text;
+        });
+    }
+
     private async Task<string> ExtractTextFromTxt(IFormFile file)
     {
         using var reader = new StreamReader(file.OpenReadStream());

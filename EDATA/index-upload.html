@@ -503,12 +503,7 @@
             <div class="doc-type-selector">
                 <label for="docType">📋 Select Document Type</label>
                 <select id="docType">
-                    <option value="">— Please select —</option>
-                    <option value="Invoice">📄 Invoice</option>
-                    <option value="NationalID">🪪 National ID Card</option>
-                    <option value="Passport">🛂 Passport</option>
-                    <option value="EmployeeRecord">👤 Employee Record</option>
-                    <option value="Receipt">🧾 Receipt</option>
+                    <option value="">Loading document types...</option>
                 </select>
             </div>
 
@@ -555,6 +550,7 @@
             'use strict';
 
             const API_URL = 'http://localhost:5018/api/FileUpload/upload';
+            const DOCUMENT_TYPES_URL = 'http://localhost:5018/api/FileUpload/document-types';
 
             const zone = document.getElementById('uploadZone');
             const input = document.getElementById('fileInput');
@@ -570,6 +566,76 @@
 
             let selectedFile = null;
             let currentObjectUrl = null;
+
+            function getDocTypeIcon(docTypeName) {
+                const normalized = (docTypeName || '').toLowerCase();
+
+                if (normalized.includes('invoice')) return '📄';
+                if (normalized.includes('national') || normalized.includes('id')) return '🪪';
+                if (normalized.includes('passport')) return '🛂';
+                if (normalized.includes('employee')) return '👤';
+                if (normalized.includes('receipt')) return '🧾';
+
+                return '📁';
+            }
+
+            function formatDocTypeLabel(docTypeName) {
+                if (!docTypeName) return '';
+
+                return docTypeName
+                    .replace(/([a-z])([A-Z])/g, '$1 $2')
+                    .replace(/_/g, ' ')
+                    .trim();
+            }
+
+            async function loadDocumentTypesFromDatabase() {
+                docTypeSelect.innerHTML = '<option value="">Loading document types...</option>';
+                docTypeSelect.disabled = true;
+                processBtn.disabled = true;
+
+                try {
+                    const response = await fetch(DOCUMENT_TYPES_URL);
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success || !Array.isArray(result.data)) {
+                        throw new Error(result.error || 'Could not load document types.');
+                    }
+
+                    docTypeSelect.innerHTML = '<option value="">— Please select —</option>';
+
+                    result.data.forEach(docType => {
+                        const docTypeName = docType.doc_tp_name;
+
+                        if (!docTypeName) return;
+
+                        const option = document.createElement('option');
+                        option.value = docTypeName;
+                        option.textContent = `${getDocTypeIcon(docTypeName)} ${formatDocTypeLabel(docTypeName)}`;
+                        docTypeSelect.appendChild(option);
+                    });
+
+                    docTypeSelect.disabled = false;
+
+                    if (result.data.length === 0) {
+                        docTypeSelect.innerHTML = '<option value="">No document types found</option>';
+                        showToast('⚠️ No document types found in database.', 'error');
+                    }
+
+                } catch (error) {
+                    console.error('Failed to load document types:', error);
+
+                    docTypeSelect.innerHTML = '<option value="">Failed to load document types</option>';
+                    docTypeSelect.disabled = true;
+
+                    showToast('❌ Could not load document types from database.', 'error');
+                }
+
+                updateProcessButtonState();
+            }
+
+            function updateProcessButtonState() {
+                processBtn.disabled = !(selectedFile && docTypeSelect.value && !docTypeSelect.disabled);
+            }
 
             function showToast(message, type = 'info') {
                 const existing = document.querySelector('.toast');
@@ -675,7 +741,7 @@
                 fileMeta.textContent = formatSize(file.size) + ' · Ready';
                 fileIcon.textContent = getFileIcon(file.name);
                 fileInfo.classList.add('show');
-                processBtn.disabled = false;
+                updateProcessButtonState();
                 zone.style.borderColor = '#10B981';
                 showToast('📤 File selected: ' + file.name, 'success');
 
@@ -686,7 +752,7 @@
                 selectedFile = null;
                 input.value = '';
                 fileInfo.classList.remove('show');
-                processBtn.disabled = true;
+                updateProcessButtonState();
                 zone.style.borderColor = '#E2E8F0';
                 clearPreview();
             }
@@ -726,6 +792,10 @@
             resetBtn.addEventListener('click', function() {
                 clearFile();
                 showToast('↺ Reset complete', 'info');
+            });
+
+            docTypeSelect.addEventListener('change', function() {
+                updateProcessButtonState();
             });
 
             processBtn.addEventListener('click', async function() {
@@ -776,10 +846,12 @@
 
                 } catch (error) {
                     showToast('❌ ' + error.message, 'error');
-                    processBtn.disabled = false;
+                    updateProcessButtonState();
                     processBtn.innerHTML = '🚀 Process with AI';
                 }
             });
+
+            loadDocumentTypesFromDatabase();
 
         })();
     </script>

@@ -863,48 +863,8 @@
         (() => {
             'use strict';
 
-            // ── Field Configurations per Document Type ──
-            const FIELD_CONFIGS = {
-                'Invoice': [
-                    { id: 'invoiceNumber', label: 'Invoice Number', type: 'text', default: 'INV-2026-0418' },
-                    { id: 'date', label: 'Date', type: 'text', default: '2026-06-12' },
-                    { id: 'dueDate', label: 'Due Date', type: 'text', default: '2026-07-12' },
-                    { id: 'vendorName', label: 'Vendor Name', type: 'text', default: 'Acme Industrial Supply Co.' },
-                    { id: 'email', label: 'Email', type: 'text', default: 'invoices@acmesupply.com' },
-                    { id: 'amount', label: 'Amount (USD)', type: 'text', default: '4,829.50' }
-                ],
-                'NationalID': [
-                    { id: 'idNumber', label: 'ID Number', type: 'text', default: 'ID-2026-001' },
-                    { id: 'fullName', label: 'Full Name', type: 'text', default: 'John Doe' },
-                    { id: 'dateOfBirth', label: 'Date of Birth', type: 'text', default: '1990-01-01' },
-                    { id: 'nationality', label: 'Nationality', type: 'text', default: 'American' },
-                    { id: 'expiryDate', label: 'Expiry Date', type: 'text', default: '2030-12-31' }
-                ],
-                'Passport': [
-                    { id: 'passportNumber', label: 'Passport Number', type: 'text', default: 'P12345678' },
-                    { id: 'fullName', label: 'Full Name', type: 'text', default: 'Jane Smith' },
-                    { id: 'dateOfBirth', label: 'Date of Birth', type: 'text', default: '1985-05-15' },
-                    { id: 'nationality', label: 'Nationality', type: 'text', default: 'British' },
-                    { id: 'expiryDate', label: 'Expiry Date', type: 'text', default: '2032-08-20' }
-                ],
-                'EmployeeRecord': [
-                    { id: 'employeeId', label: 'Employee ID', type: 'text', default: 'EMP-2026-001' },
-                    { id: 'fullName', label: 'Full Name', type: 'text', default: 'Robert Johnson' },
-                    { id: 'department', label: 'Department', type: 'text', default: 'Engineering' },
-                    { id: 'position', label: 'Position', type: 'text', default: 'Senior Developer' },
-                    { id: 'email', label: 'Email', type: 'text', default: 'robert.j@company.com' },
-                    { id: 'phone', label: 'Phone', type: 'text', default: '+1-555-123-4567' }
-                ],
-                'Receipt': [
-                    { id: 'receiptNumber', label: 'Receipt Number', type: 'text', default: 'RCP-2026-001' },
-                    { id: 'date', label: 'Date', type: 'text', default: '2026-06-12' },
-                    { id: 'vendorName', label: 'Vendor Name', type: 'text', default: 'Local Store' },
-                    { id: 'amount', label: 'Amount', type: 'text', default: '125.50' },
-                    { id: 'paymentMethod', label: 'Payment Method', type: 'text', default: 'Credit Card' }
-                ]
-            };
+            const API_BASE = 'http://localhost:5018';
 
-            // ── DOM refs ──
             const dynamicFieldsContainer = document.getElementById('dynamicFields');
             const docTypeLabel = document.getElementById('docTypeLabel');
             const docTypeDisplay = document.getElementById('docTypeDisplay');
@@ -913,53 +873,122 @@
 
             const editBtn = document.getElementById('editBtn');
             const saveBtn = document.getElementById('saveBtn');
-            const cancelBtn = document.getElementById('cancelBtn');
             const statusBadge = document.getElementById('statusBadge');
             const statusText = document.getElementById('statusText');
 
             let isEditing = false;
-            const API_BASE = 'http://localhost:5018';
-                let currentDocType = 'Invoice';
-                let dynamicInputs = [];
-                let docId = 'DOC-2026-001';
+            let currentDocType = '';
+            let dynamicInputs = [];
+            let docId = '';
+            let savedFileName = '';
+            let extractedText = '';
+            let extractedValues = {};
+            let savedRecordId = '';
+            let currentDocumentKey = '';
+            let originalDataJson = '';
+            let hasUnsavedChanges = false;
 
-                let savedFileName = '';
-                let extractedText = '';
+            function createDocumentKey() {
+                // The upload page may provide its own unique key. If it does not,
+                // use the saved path/name and extraction response to identify this upload.
+                const uploadKey = sessionStorage.getItem('currentUploadKey');
+                if (uploadKey) return uploadKey;
 
-            // ── Generate Dynamic Fields ──
-            function generateFields(docType) {
-                const config = FIELD_CONFIGS[docType] || FIELD_CONFIGS['Invoice'];
-                currentDocType = docType;
-                docTypeDisplay.value = docType;
+                const source = [
+                    sessionStorage.getItem('savedFilePath') || '',
+                    sessionStorage.getItem('savedFileName') || '',
+                    sessionStorage.getItem('fileName') || '',
+                    sessionStorage.getItem('extractedData') || ''
+                ].join('|');
 
-                // Update label
-                const docTypeNames = {
-                    'Invoice': 'Invoice',
-                    'NationalID': 'National ID Card',
-                    'Passport': 'Passport',
-                    'EmployeeRecord': 'Employee Record',
-                    'Receipt': 'Receipt'
-                };
-                docTypeLabel.textContent = `Review the fields pulled from your ${docTypeNames[docType] || docType} document. Edit any missing or incorrect data.`;
+                let hash = 2166136261;
+                for (let i = 0; i < source.length; i++) {
+                    hash ^= source.charCodeAt(i);
+                    hash = Math.imul(hash, 16777619);
+                }
 
-                // Clear container
+                return `document-${(hash >>> 0).toString(16)}`;
+            }
+
+            function restoreRecordStateForCurrentDocument() {
+                currentDocumentKey = createDocumentKey();
+
+                const storedRecordId = sessionStorage.getItem('savedRecordId') || '';
+                const storedDocumentKey = sessionStorage.getItem('savedRecordDocumentKey') || '';
+
+                // Reuse the database ID only when it belongs to this exact uploaded document.
+                if (storedRecordId && storedDocumentKey === currentDocumentKey) {
+                    savedRecordId = storedRecordId;
+                } else {
+                    savedRecordId = '';
+                    sessionStorage.removeItem('savedRecordId');
+                    sessionStorage.removeItem('savedRecordDocumentKey');
+                }
+            }
+
+            function labelFromFieldName(fieldName) {
+                return fieldName
+                    .replace(/([a-z])([A-Z])/g, '$1 $2')
+                    .replace(/[_-]+/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim()
+                    .toUpperCase();
+            }
+
+            function normalizeExtractedData(raw) {
+                if (!raw) return {};
+
+                if (typeof raw === 'string') {
+                    try {
+                        return JSON.parse(raw);
+                    } catch {
+                        return {};
+                    }
+                }
+
+                return typeof raw === 'object' ? raw : {};
+            }
+
+            function generateFieldsFromData(dataObject) {
                 dynamicFieldsContainer.innerHTML = '';
                 dynamicInputs = [];
 
-                // Generate fields
-                config.forEach((field, index) => {
+                const entries = Object.entries(dataObject || {});
+
+                if (entries.length === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'field-group';
+                    div.style.gridColumn = '1 / -1';
+
+                    const label = document.createElement('label');
+                    label.textContent = 'NO FIELDS FOUND';
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = 'No extracted fields were returned. Check the document type fields in the database.';
+                    input.disabled = true;
+
+                    div.appendChild(label);
+                    div.appendChild(input);
+                    dynamicFieldsContainer.appendChild(div);
+                    return;
+                }
+
+                entries.forEach(([key, value]) => {
                     const div = document.createElement('div');
                     div.className = 'field-group';
 
                     const label = document.createElement('label');
-                    label.textContent = field.label;
+                    label.textContent = labelFromFieldName(key);
                     div.appendChild(label);
 
                     const input = document.createElement('input');
-                    input.type = field.type || 'text';
-                    input.id = field.id;
-                    input.value = field.default || '';
+                    input.type = 'text';
+                    input.id = key;
+                    input.dataset.fieldName = key;
+                    input.value = value ?? '';
                     input.disabled = true;
+                    input.addEventListener('input', handleFieldChanged);
                     div.appendChild(input);
 
                     dynamicFieldsContainer.appendChild(div);
@@ -967,14 +996,13 @@
                 });
             }
 
-            // ── Render the live document preview (PDF/image/text) carried over from the upload page ──
             function renderDocPreview() {
                 const dataUrl = sessionStorage.getItem('docPreviewDataUrl');
                 const previewFileName = sessionStorage.getItem('docPreviewFileName') || fileNameDisplay.value || '';
                 const container = document.getElementById('docRealPreview');
                 const iconWrap = document.getElementById('docIconWrap');
 
-                if (!dataUrl) return; // No preview carried over — keep the default icon display
+                if (!dataUrl) return;
 
                 const ext = (previewFileName.split('.').pop() || '').toLowerCase();
                 let el = null;
@@ -992,11 +1020,10 @@
                     try {
                         const base64 = dataUrl.split(',')[1];
                         el.textContent = decodeURIComponent(escape(atob(base64)));
-                    } catch (e) {
+                    } catch {
                         el.textContent = 'Preview unavailable.';
                     }
                 }
-                // .docx (or anything else) → no inline renderer, keep the icon-based fallback
 
                 if (el) {
                     container.innerHTML = '';
@@ -1006,57 +1033,49 @@
                 }
             }
 
-            // ── Load Data from Session Storage ──
             function loadDataFromSession() {
-            const storedDocType = sessionStorage.getItem('docType');
-            const storedFileName = sessionStorage.getItem('fileName');
-            const storedData = sessionStorage.getItem('extractedData');
+                const storedDocType = sessionStorage.getItem('docType') || 'Unknown';
+                const storedFileName = sessionStorage.getItem('fileName') || 'Unknown File';
+                const storedData = sessionStorage.getItem('extractedData');
 
-            savedFileName = sessionStorage.getItem('savedFileName') || '';
-            extractedText = sessionStorage.getItem('extractedText') || '';
+                savedFileName = sessionStorage.getItem('savedFileName') || storedFileName;
+                extractedText = sessionStorage.getItem('extractedText') || '';
 
-                if (storedDocType) {
-                    generateFields(storedDocType);
-                } else {
-                    generateFields('Invoice');
+                currentDocType = storedDocType;
+                docTypeDisplay.value = currentDocType;
+                fileNameDisplay.value = storedFileName;
+                document.getElementById('docName').textContent = storedFileName;
+
+                docTypeLabel.textContent =
+                    `Review the fields pulled from your ${currentDocType} document. Edit any missing or incorrect data.`;
+
+                try {
+                    const apiResponse = JSON.parse(storedData || '{}');
+                    extractedValues = normalizeExtractedData(apiResponse.extractedData);
+                } catch {
+                    extractedValues = {};
                 }
 
-                if (storedFileName) {
-                    fileNameDisplay.value = storedFileName;
-                    document.getElementById('docName').textContent = storedFileName;
+                generateFieldsFromData(extractedValues);
+                restoreRecordStateForCurrentDocument();
+
+                const storedDocIdKey = `docId:${currentDocumentKey}`;
+                docId = sessionStorage.getItem(storedDocIdKey) || '';
+
+                if (!docId) {
+                    const now = new Date();
+                    docId = `DOC-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+                    sessionStorage.setItem(storedDocIdKey, docId);
                 }
 
-                if (storedData) {
-                    try {
-                        const data = JSON.parse(storedData);
-                        // Populate fields if data exists
-                        if (data.extractedData) {
-                            try {
-                                const extracted = JSON.parse(data.extractedData);
-                                Object.keys(extracted).forEach(key => {
-                                    const input = document.getElementById(key);
-                                    if (input) {
-                                        input.value = extracted[key];
-                                    }
-                                });
-                            } catch (e) {
-                                // If extractedData is not valid JSON, ignore
-                            }
-                        }
-                    } catch (e) {
-                        // If storedData is not valid JSON, ignore
-                    }
-                }
-
-                // Generate a unique document ID
-                const now = new Date();
-                docId = `DOC-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
                 docIdInput.value = docId;
+                originalDataJson = JSON.stringify(getData());
+                hasUnsavedChanges = false;
 
                 renderDocPreview();
+                updateSaveButton();
             }
 
-            // ── Helpers ──
             function setStatus(label, type = 'ready') {
                 statusText.textContent = label;
                 statusBadge.className = 'status-badge';
@@ -1069,8 +1088,9 @@
                 const container = document.getElementById('toastContainer');
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
-                toast.innerHTML = message;
+                toast.textContent = message;
                 container.appendChild(toast);
+
                 setTimeout(() => {
                     toast.classList.add('toast-out');
                     setTimeout(() => toast.remove(), 350);
@@ -1080,43 +1100,61 @@
             function getData() {
                 const data = {};
                 dynamicInputs.forEach(input => {
-                    data[input.id] = input.value.trim();
+                    data[input.dataset.fieldName || input.id] = input.value.trim();
                 });
                 return data;
             }
 
-            function validate(data) {
-                for (const [key, value] of Object.entries(data)) {
-                    if (!value) {
-                        showToast(`❌ ${key} is required.`, 'error');
-                        return false;
-                    }
-                }
-                return true;
+            function handleFieldChanged() {
+                hasUnsavedChanges = JSON.stringify(getData()) !== originalDataJson;
+                updateSaveButton();
             }
 
-            // ── Toggle Edit ──
-            window.toggleEdit = function() {
+            function updateSaveButton() {
+                if (!savedRecordId) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '💾 Save';
+                    return;
+                }
+
+                if (isEditing && hasUnsavedChanges) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '💾 Update';
+                    return;
+                }
+
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '✅ Saved';
+            }
+
+            window.toggleEdit = function () {
+                if (dynamicInputs.length === 0) {
+                    showToast('No extracted fields are available to edit.', 'error');
+                    return;
+                }
+
                 isEditing = !isEditing;
-                dynamicInputs.forEach(inp => {
-                    inp.disabled = !isEditing;
-                    inp.classList.toggle('editable', isEditing);
+
+                dynamicInputs.forEach(input => {
+                    input.disabled = !isEditing;
+                    input.classList.toggle('editable', isEditing);
                 });
+
                 editBtn.textContent = isEditing ? '🔒 Lock' : '✏️ Edit';
                 editBtn.classList.toggle('active', isEditing);
-                if (isEditing) {
-                    showToast('✏️ Editing enabled — update any field.', 'info');
-                } else {
-                    showToast('🔒 Fields locked.', 'info');
-                }
+                updateSaveButton();
+
+                showToast(isEditing ? 'Editing enabled.' : 'Fields locked.', 'info');
             };
 
-            // ── Save ──
-            window.handleSave = async function() {
-                const data = getData();
-                if (!validate(data)) return;
+            window.handleSave = async function () {
+                const isUpdate = Boolean(savedRecordId);
 
-                // Add common fields to data
+                if (isUpdate && !hasUnsavedChanges) {
+                    showToast('No changes were made. The record is already saved.', 'info');
+                    return;
+                }
+
                 const fullData = {
                     docId: docIdInput.value,
                     docType: currentDocType,
@@ -1124,110 +1162,158 @@
                     savedFileName: savedFileName || fileNameDisplay.value,
                     savedFilePath: sessionStorage.getItem('savedFilePath') || '',
                     extractedText: extractedText || sessionStorage.getItem('extractedText') || '',
-                    attachPath: savedFileName || fileNameDisplay.value,
-                    extractedData: data
+                    attachPath: sessionStorage.getItem('savedFilePath') || savedFileName || fileNameDisplay.value,
+                    extractedData: getData()
                 };
+
                 saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="spinner"></span> Saving…';
-                setStatus('Saving…', 'saving');
+                saveBtn.innerHTML = `<span class="spinner"></span> ${isUpdate ? 'Updating…' : 'Saving…'}`;
+                setStatus(isUpdate ? 'Updating…' : 'Saving…', 'saving');
 
                 try {
-                    const res = await fetch(`${API_BASE}/api/FileUpload/save`, {
-                        method: 'POST',
+                    const url = isUpdate
+                        ? `${API_BASE}/api/FileUpload/update/${encodeURIComponent(savedRecordId)}`
+                        : `${API_BASE}/api/FileUpload/save`;
+
+                    const response = await fetch(url, {
+                        method: isUpdate ? 'PUT' : 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(fullData)
                     });
-                    const result = await res.json();
 
-                    if (res.ok) {
-                        showToast(`✅ Record saved! ID: ${result.id || '✔️'}`, 'success');
-                        setStatus('Saved ✓', 'saved');
-                        if (isEditing) window.toggleEdit();
-                    } else {
-                        showToast(`❌ ${result.error || 'Failed to save.'}`, 'error');
-                        setStatus('Error', 'error');
+                    let result = {};
+                    const responseText = await response.text();
+                    if (responseText) {
+                        try {
+                            result = JSON.parse(responseText);
+                        } catch {
+                            result = { message: responseText };
+                        }
                     }
-                } catch (_) {
-                    showToast('❌ Network error. Is the backend running?', 'error');
-                    setStatus('Offline', 'error');
+
+                    if (!response.ok) {
+                        throw new Error(result.error || result.message || `${response.status} ${response.statusText}`);
+                    }
+
+                    if (!isUpdate) {
+                        const newId = result.id ?? result.dataId ?? result.data_id;
+                        if (!newId) {
+                            throw new Error('The save API succeeded but did not return the new record ID.');
+                        }
+
+                        savedRecordId = String(newId);
+                        sessionStorage.setItem('savedRecordId', savedRecordId);
+                        sessionStorage.setItem('savedRecordDocumentKey', currentDocumentKey);
+                    }
+
+                    originalDataJson = JSON.stringify(getData());
+                    hasUnsavedChanges = false;
+                    setStatus(isUpdate ? 'Updated ✓' : 'Saved ✓', 'saved');
+                    showToast(
+                        isUpdate
+                            ? `Record ${savedRecordId} updated successfully.`
+                            : `New record ${savedRecordId} saved successfully.`,
+                        'success'
+                    );
+
+                    if (isEditing) {
+                        isEditing = false;
+                        dynamicInputs.forEach(input => {
+                            input.disabled = true;
+                            input.classList.remove('editable');
+                        });
+                        editBtn.textContent = '✏️ Edit';
+                        editBtn.classList.remove('active');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showToast(`Failed: ${error.message}`, 'error');
+                    setStatus('Error', 'error');
                 } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '💾 Save';
+                    updateSaveButton();
                 }
             };
 
-            // ── Cancel ──
-            window.handleCancel = function() {
+            window.handleCancel = function () {
                 if (isEditing) {
-                    if (confirm('Discard changes and lock fields?')) {
-                        window.toggleEdit();
-                    }
-                } else {
-                    if (confirm('Return to upload page?')) {
-                        window.location.href = 'upload.html';
-                    }
+                    if (!confirm('Discard your unsaved changes?')) return;
+
+                    const originalData = JSON.parse(originalDataJson || '{}');
+                    dynamicInputs.forEach(input => {
+                        const key = input.dataset.fieldName || input.id;
+                        input.value = originalData[key] ?? '';
+                        input.disabled = true;
+                        input.classList.remove('editable');
+                    });
+
+                    isEditing = false;
+                    hasUnsavedChanges = false;
+                    editBtn.textContent = '✏️ Edit';
+                    editBtn.classList.remove('active');
+                    updateSaveButton();
+                    showToast('Changes discarded.', 'info');
+                    return;
+                }
+
+                if (confirm('Return to the upload page?')) {
+                    window.location.href = 'index-upload.html';
                 }
             };
 
-            // ── Document Actions ──
-            window.handleDownload = function() {
+            window.handleDownload = function () {
                 const dataUrl = sessionStorage.getItem('docPreviewDataUrl');
                 const name = sessionStorage.getItem('docPreviewFileName') || fileNameDisplay.value || 'document';
 
                 if (!dataUrl) {
-                    showToast('⚠️ No preview file available to download.', 'error');
+                    showToast('No preview file is available to download.', 'error');
                     return;
                 }
 
-                const a = document.createElement('a');
-                a.href = dataUrl;
-                a.download = name;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                showToast('⬇ Downloading document…', 'success');
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = name;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+
+                showToast('Downloading document…', 'success');
             };
 
-            window.handleFullscreen = function() {
+            window.handleFullscreen = function () {
                 const dataUrl = sessionStorage.getItem('docPreviewDataUrl');
 
                 if (!dataUrl) {
-                    showToast('⚠️ No preview file available.', 'error');
+                    showToast('No preview file is available.', 'error');
                     return;
                 }
 
                 const win = window.open('', '_blank');
+
                 if (win) {
                     win.document.write(`<iframe src="${dataUrl}" style="border:none;width:100%;height:100vh;"></iframe>`);
                     win.document.title = sessionStorage.getItem('docPreviewFileName') || 'Document Preview';
+                    showToast('Full-screen preview opened.', 'info');
                 } else {
-                    showToast('⚠️ Pop-up blocked. Please allow pop-ups to view full screen.', 'error');
-                    return;
+                    showToast('Pop-up blocked. Please allow pop-ups.', 'error');
                 }
-                showToast('🖥 Full screen preview opened.', 'info');
             };
 
-            // ── Check API Health ──
             async function checkHealth() {
                 try {
                     const res = await fetch(`${API_BASE}/api/FileUpload/test`);
                     if (res.ok) {
                         setStatus('Ready', 'ready');
-                        showToast('✅ Connected to backend.', 'success');
                     } else {
                         setStatus('Error', 'error');
-                        showToast('⚠️ Backend responded with error.', 'error');
                     }
-                } catch (_) {
+                } catch {
                     setStatus('Offline', 'error');
                     showToast('⚠️ Cannot reach backend. Start the API.', 'error');
                 }
             }
 
-            // ── Init ──
             loadDataFromSession();
             checkHealth();
-
         })();
     </script>
 

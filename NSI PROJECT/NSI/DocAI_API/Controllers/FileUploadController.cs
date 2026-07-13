@@ -30,6 +30,33 @@ public class FileUploadController : ControllerBase
         });
     }
 
+    [HttpGet("document-types")]
+    public async Task<IActionResult> GetDocumentTypes()
+    {
+        var documentTypes = await _databaseService.GetAllDocumentTypesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            count = documentTypes.Count,
+            data = documentTypes
+        });
+    }
+
+    [HttpGet("fields/{docType}")]
+    public async Task<IActionResult> GetFieldsByDocType(string docType)
+    {
+        var fields = await _databaseService.GetFieldsByDocTypeAsync(docType);
+
+        return Ok(new
+        {
+            success = true,
+            docType,
+            count = fields.Count,
+            fields
+        });
+    }
+
     [HttpPost("upload")]
     public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string docType)
     {
@@ -44,12 +71,6 @@ public class FileUploadController : ControllerBase
         try
         {
             fileText = await _textExtractionService.ExtractTextFromFile(file);
-
-            Console.WriteLine("========================================");
-            Console.WriteLine("📄 RAW EXTRACTED TEXT:");
-            Console.WriteLine(fileText);
-            Console.WriteLine($"📄 Text length: {fileText.Length} characters");
-            Console.WriteLine("========================================");
         }
         catch (Exception ex)
         {
@@ -72,19 +93,17 @@ public class FileUploadController : ControllerBase
             await file.CopyToAsync(stream);
         }
 
-        Console.WriteLine($"📄 File saved: {filePath}");
+        var fields = await _databaseService.GetFieldsByDocTypeAsync(docType);
 
-        var extractedJson = await _aiService.ExtractInvoiceData(fileText, docType);
+        if (fields.Count == 0)
+        {
+            return BadRequest(new
+            {
+                error = $"No fields found in doc_type_fields table for document type '{docType}'."
+            });
+        }
 
-        var dataDict = JsonSerializer.Deserialize<Dictionary<string, object>>(extractedJson)
-                       ?? new Dictionary<string, object>();
-
-        var filteredData = _aiService.FilterFieldsForDocType(dataDict, docType);
-        var filteredJson = JsonSerializer.Serialize(filteredData);
-
-        Console.WriteLine("=== FILTERED DATA ===");
-        Console.WriteLine(filteredJson);
-        Console.WriteLine("=== END FILTERED DATA ===");
+        var extractedJson = await _aiService.ExtractData(fileText, docType, fields);
 
         return Ok(new
         {
@@ -93,7 +112,7 @@ public class FileUploadController : ControllerBase
             savedFilePath = filePath,
             fileSize = file.Length,
             fileType = file.ContentType,
-            extractedData = filteredJson,
+            extractedData = extractedJson,
             extractedText = fileText,
             docType = docType,
             message = "✅ AI processing complete!"
@@ -142,9 +161,66 @@ public class FileUploadController : ControllerBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine("❌ SAVE ERROR:");
-            Console.WriteLine(ex.Message);
+            return BadRequest(new
+            {
+                success = false,
+                error = ex.Message
+            });
+        }
+    }
 
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateData(int id, [FromBody] JsonElement data)
+    {
+        try
+        {
+            string docType = GetStringValue(data, "docType");
+            string fileName = GetStringValue(data, "fileName");
+            string savedFileName = GetStringValue(data, "savedFileName");
+            string extractedText = GetStringValue(data, "extractedText");
+
+            if (string.IsNullOrWhiteSpace(docType))
+                return BadRequest(new { success = false, error = "docType is missing." });
+
+            if (string.IsNullOrWhiteSpace(fileName))
+                fileName = "Unknown File";
+
+            if (string.IsNullOrWhiteSpace(savedFileName))
+                savedFileName = fileName;
+
+            var saveUploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            var fullFilePath = Path.Combine(saveUploadsFolder, savedFileName);
+
+            var extractedDataJson = ExtractDataJson(data);
+
+            var updated = await _databaseService.UpdateDocumentAsync(
+                id: id,
+                docType: docType,
+                docName: fileName,
+                fileName: savedFileName,
+                extractedJson: extractedDataJson,
+                ocrText: extractedText,
+                attachPath: fullFilePath
+            );
+
+            if (!updated)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Document not found. It may have been deleted."
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                id = id,
+                message = "✅ Data updated in PostgreSQL successfully!"
+            });
+        }
+        catch (Exception ex)
+        {
             return BadRequest(new
             {
                 success = false,
@@ -156,49 +232,50 @@ public class FileUploadController : ControllerBase
     [HttpGet("all")]
     public async Task<IActionResult> GetAllDocuments()
     {
-        try
-        {
-            var documents = await _databaseService.GetAllDocumentsAsync();
+        var documents = await _databaseService.GetAllDocumentsAsync();
 
-            return Ok(new
-            {
-                success = true,
-                count = documents.Count,
-                data = documents
-            });
-        }
-        catch (Exception ex)
+        return Ok(new
         {
-            return BadRequest(new
+            success = true,
+            count = documents.Count,
+            data = documents
+        });
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteDocument(int id)
+    {
+        var deleted = await _databaseService.DeleteDocumentAsync(id);
+
+        if (!deleted)
+        {
+            return NotFound(new
             {
                 success = false,
-                error = ex.Message
+                message = "Document not found."
             });
         }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Document deleted from database successfully."
+        });
     }
 
     [HttpGet("view/{fileName}")]
     public IActionResult ViewDocument(string fileName)
     {
-        try
-        {
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-            var filePath = Path.Combine(uploadsFolder, fileName);
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+        var filePath = Path.Combine(uploadsFolder, fileName);
 
-            Console.WriteLine($"📄 Looking for file: {filePath}");
+        if (!System.IO.File.Exists(filePath))
+            return NotFound(new { error = "File not found." });
 
-            if (!System.IO.File.Exists(filePath))
-                return NotFound(new { error = "File not found." });
+        var fileBytes = System.IO.File.ReadAllBytes(filePath);
+        var contentType = GetContentType(fileName);
 
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            var contentType = GetContentType(fileName);
-
-            return File(fileBytes, contentType);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        return File(fileBytes, contentType);
     }
 
     private static string GetStringValue(JsonElement data, string propertyName)
